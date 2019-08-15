@@ -12,7 +12,7 @@
 # The full license is in the file LICENSE.txt, distributed with this software.
 # ----------------------------------------------------------------------------
 
-import os
+import os, sys
 
 from _df_utils import (
     get_nan_value_and_sampleID_cols,
@@ -126,8 +126,10 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=False):
                 md_pd[name_col] = output_col
 
     # correct sample ID
-    if 'sample_id' in rules:
-        md_pd = make_sampleID_cleaning(md_pd, rules['sample_id'])
+    if 'sample_id' not in rules:
+        print('Error: "sample_id" in a mandatory rule')
+        sys.exit(1)
+    md_pd = make_sampleID_cleaning(md_pd, rules['sample_id'])
 
     # correct time
     if 'time_format' in rules:
