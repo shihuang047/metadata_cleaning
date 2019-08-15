@@ -1,0 +1,84 @@
+sample_id:
+    # if not set, will search for any column that's only made on unique entries
+    sample_id_col: #SampleID
+    # set to 1 to check that the column is only made on unique entries (automatic is None set for "sample_id_col")
+    check_sample_id_unique: 1
+    # set to 1 to force the non-NaN value
+    check_sample_id_force: 1
+
+nans:
+    # value to use to replace all instances recognized as NaN
+    values: not provided, Unknown, Unspecified, no data -> Missing
+    ranges: bloom_fraction -> range(0,1)
+    # [Patching] If Age_year is equal to 'not provided', 'Unknown', 'Unspecified', 'no data' => then Missing _____________[N=2]	 ['AGE_CORRECTED', 'AGE_YEARS']
+    # [Patching] If the answer is Not provided then Missing _____________[N=223]	 ['BMR_Kcald', 'BMR_MJd', 'bloom_fraction'] ...
+    # [Patching] If the answer is equal to => 'Not provided', 'Unknown', 'Unspecified', 'no data' then Missing _____________[N=7]	 ['ALCOHOL_TYPES_BEERCIDER', 'ALCOHOL_TYPES_RED_WINE', 'ALCOHOL_TYPES_SOUR_BEERS'] ...
+    # [Patching] If the answer is equal to => 'Not provided', 'Unknown', 'unknown', 'Unspecified', 'no data' then Missing _____________[N=1]	 ['SEX']
+    # [Patching] If the country is equal to => not provided, Unspecified, no_data => then Missing _____________[N=2]	 ['COUNTRY_OF_BIRTH', 'COUNTRY_RESIDENCE']
+    # [Patching] If the country is equal to Not provided, Unspecified, no_data => then Missing _____________[N=1]	 ['COUNTRY']
+    # [Patching] if bloom_fraction is out of the ranges [0 ; 1] => then Missing _____________[N=1]	 ['bloom_fraction']
+    # [Patching] if the answer is not provided, then 'Missing' _____________[N=43]	 ['AGE_CAT', 'AGE_YEARS_BINS', 'AGE_YEARS_BINS_NEW'] ...
+    
+booleans:
+    False -> No
+    True -> Yes
+    # [Patching] If the answer is 'False' then No _____________[N=8]	 ['ALCOHOL_CONSUMPTION', 'ALCOHOL_TYPES_BEERCIDER', 'ALCOHOL_TYPES_RED_WINE'] ...
+    # [Patching] If the answer is 'True' then Yes _____________[N=8]	 ['ALCOHOL_CONSUMPTION', 'ALCOHOL_TYPES_BEERCIDER', 'ALCOHOL_TYPES_RED_WINE'] ...
+    
+
+time_format:
+    format: DD/MM/YYYY HH:MM
+    columns: COLLECTION_TIMESTAMP, COLLECTION_DATE
+    # [Patching] Addition of the 0 before the time if it is between 0 & 9 _____________[N=1]	 ['COLLECTION_TIMESTAMP']
+    # [Patching] If the Collection date is anterior to 2011 or superior to current date => then missing _____________[N=1]	 ['COLLECTION_DATE']
+    # [Patching] If the year is 15 => then 2015, if the year is 16 => then 2016, etc _____________[N=2]	 ['COLLECTION_DATE', 'COLLECTION_TIMESTAMP']
+    range(2011, 2019)
+    
+percolumns:
+    age:
+        range(0,120)
+        # [Patching] If Age_year is not in range [0 ; 120] => then Missing _____________[N=2]	 ['AGE_CORRECTED', 'AGE_YEARS']
+    country:
+        Cote D'ivoire -> Côte d'Ivoire
+        Iran, Islamic Republic of -> Iran (Islamic Republic of)
+        Libyan Arab Jamahiriya -> Libya
+        Reunion -> Réunion
+        USA, United States of America, US -> United States
+        # [Patching] If the country is equal to 'Cote D'ivoire' => then 'Côte d'Ivoire' _____________[N=3]	 ['COUNTRY', 'COUNTRY_OF_BIRTH', 'COUNTRY_RESIDENCE'] ...
+        # [Patching] If the country is equal to 'Iran, Islamic Republic of' => then 'Iran (Islamic Republic of)' _____________[N=3]	 ['COUNTRY', 'COUNTRY_OF_BIRTH', 'COUNTRY_RESIDENCE'] ...
+        # [Patching] If the country is equal to 'Libyan Arab Jamahiriya' => then 'Libya' _____________[N=3]	 ['COUNTRY', 'COUNTRY_OF_BIRTH', 'COUNTRY_RESIDENCE'] ...
+        # [Patching] If the country is equal to 'Reunion' => then 'Réunion' _____________[N=3]	 ['COUNTRY', 'COUNTRY_OF_BIRTH', 'COUNTRY_RESIDENCE'] ...
+        # [Patching] If the country is equal to => USA, United States of America & US => then 'United States' _____________[N=3]	 ['COUNTRY', 'COUNTRY_OF_BIRTH', 'COUNTRY_RESIDENCE'] ...
+    bmi:
+        range(15,50)
+        # [Patching] if BMI is out of the ranges [15 ; 50 kg/m2] => then Missing _____________[N=2]	 ['BMI', 'BMI_CORRECTED']
+    height:
+        range(48,210)
+        # [Patching] if Height is out of the ranges [48 ; 210 cm] => then Missing _____________[N=1]	 ['HEIGHT_CM']
+    weight:
+        range(2.5,200)
+        # [Patching] if Weight is out of the ranges [2,5 ; 200 kg] => then Missing _____________[N=1]	 ['WEIGHT_KG']
+
+combinations:
+    age & alcohol_consumption: range(0,4) & 1 -> alcohol_consumption: Missing
+    # [Patching] If Age is between [0 - 4] years old & alcohol consumption is reported => then Missing _____________[N=1]	 ['ALCOHOL_CONSUMPTION']
+    age & height: range(105,) & 1 -> height: Missing
+    # [Patching] If Age is between [0 - 4] years old & height is superior to 105 cm => then Missing _____________[N=1]	 ['HEIGHT_CM']
+    age & weight: range(20,) & 1 -> weight: Missing
+    # [Patching] If Age is between [0 - 4] years old & weight is superior to 20 kg => then Missing _____________[N=1]	 ['WEIGHT_KG']
+    alcohol & alcohol_consumption: 1, 0 -> alcohol_consumption: Yes
+    # [Patching] If At least one type of alcohol is equal to 'Yes' but the generic question about alcohol consumption reported isn't equal to 'Yes' => then 'Yes' _____________[N=1]	 ['ALCOHOL_CONSUMPTION']
+    sex & pregnant: male, !NaN -> pregnant: NaN
+    # [Patching] Is the Sex is 'Male' and the answer isn't equal to 'nan' => then 'nan' _____________[N=1]	 ['PREGNANT']
+
+# [Query] Age_year is not provided _____________[N=1]	 ['AGE_YEARS']
+# [Query] BMI is not provided _____________[N=2]	 ['BMI', 'BMI_CORRECTED']
+# [Query] Height is not provided _____________[N=1]	 ['HEIGHT_CM']
+# [Query] Sample_type is not provided _____________[N=1]	 ['SAMPLE_TYPE']
+# [Query] The Date of Collection (mandatory item) is missing. _____________[N=1]	 ['COLLECTION_DATE']
+# [Query] The SampleID (mandatory item) is missing. _____________[N=1]	 ['#SampleID']
+# [Query] The SampleID is not unique _____________[N=1]	 ['#SampleID']
+# [Query] The Sex (mandatory item) is missing. _____________[N=1]	 ['SEX']
+# [Query] The Subject Identifier (mandatory item) is missing. _____________[N=1]	 ['HOST_SUBJECT_ID']
+# [Query] The Survey_ID (mandatory item) is missing. _____________[N=1]	 ['SURVEY_ID']
+# [Query] Weight is not provided _____________[N=1]	 ['WEIGHT_KG']

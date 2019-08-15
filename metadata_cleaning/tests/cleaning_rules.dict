@@ -1,0 +1,53 @@
+full_yaml_d = {
+
+'del_columns':
+    [latitude, longitude],
+
+'na_value': 'Missing',
+
+'sample_id':
+    {'sample_id_col': ['#SampleID', 'sample_name'],
+     'check_sample_id_unique': True,
+     'check_sample_id_force': True},
+
+'nans':
+    {'values':
+         {'not provided': 'Missing',
+          'Unknown': 'Missing',
+          'Unspecified': 'Missing',
+          'no data': 'Missing'},
+     'ranges':
+         {('bloom_fraction', [0, 1]): 'Missing'}
+    },
+    
+'booleans':
+    {'False': 'No',
+    'True': 'Yes'},
+
+'time_format':
+    {'format': 'DD/MM/YYYY HH:MM',
+     'columns': ['COLLECTION_TIMESTAMP', 'COLLECTION_TIME', 'COLLECTION_DATE'],
+     'ranges': [2011, 2019]},
+
+'per_column':
+    {'age': [0, 120],
+     'country':
+         {"Cote D'ivoire": "Côte d'Ivoire",
+          'Iran, Islamic Republic of': 'Iran (Islamic Republic of)',
+          'Libyan Arab Jamahiriya': 'Libya',
+          'Reunion': 'Réunion',
+          'USA': 'United States',
+          'United States of America': 'United States',
+          'US': 'United States'},
+     'bmi': [15, 50],
+     'height': [48, 210],
+     'weight': [2.5, 200]},
+
+'combinations':
+    {('alcohol', 'alcohol_consumption'): [(True, False), {'alcohol_consumption': 'Yes'}],
+    ('age', 'alcohol_consumption'): [([0, 4], True), {'alcohol_consumption': 'Missing'}],
+     ('age', 'height'): [([105, None], True), {'height': 'Missing'}],
+     ('age', 'weight'): [([20, None], True), {'weight': 'Missing'}],
+     ('sex', 'pregnant'): [('male', True), {'pregnant': np.nan}]}
+}
+

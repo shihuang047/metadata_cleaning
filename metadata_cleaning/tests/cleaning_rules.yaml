@@ -1,0 +1,39 @@
+booleans: {'False': 'No', 'True': 'Yes'}
+combinations:
+  ? !!python/tuple [age, alcohol_consumption]
+  : - !!python/tuple ['range(0,4)', true]
+    - {alcohol_consumption: Missing}
+  ? !!python/tuple [age, height]
+  : - !!python/tuple ['range(0,4)', 'range(105,None)']
+    - {height: Missing}
+  ? !!python/tuple [age, weight]
+  : - !!python/tuple ['range(0,4)', 'range(20,None)']
+    - {weight: Missing}
+  ? !!python/tuple [alcohol, alcohol_consumption]
+  : - !!python/tuple [true, false]
+    - {alcohol_consumption: 'Yes'}
+  ? !!python/tuple [sex, pregnant]
+  : - !!python/tuple [male, true]
+    - {pregnant: .nan}
+del_columns: [latitude, longitude]
+na_value: Missing
+nans: {Unknown: Missing, Unspecified: Missing, no data: Missing, not provided: Missing}
+per_column:
+  age: ['range(0,120)']
+  bloom_fraction: ['range(0,1)']
+  bmi: ['range(15,50)']
+  country:
+  - {Cote D'ivoire: "C\xF4te d'Ivoire", 'Iran, Islamic Republic of': Iran (Islamic
+      Republic of), Libyan Arab Jamahiriya: Libya, Reunion: "R\xE9union", US: United
+      States, USA: United States, United States of America: United States}
+  height: ['range(48,210)']
+  weight: ['range(2.5,200)']
+sample_id:
+  check_sample_id_force: true
+  check_sample_id_unique: true
+  sample_id_cols: ['#SampleID', sample_name]
+time_format:
+  columns: [COLLECTION_TIMESTAMP, COLLECTION_DATE, COLLECTION_TIME]
+  format: DD/MM/YYYY HH:MM
+  ranges: range(2011,2019)
+
