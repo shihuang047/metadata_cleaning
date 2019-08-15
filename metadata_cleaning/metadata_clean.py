@@ -22,7 +22,12 @@ from _df_utils import (
 from _main_utils import (
     make_replacement_cleaning,
     make_sampleID_cleaning,
-    make_date_time_cleaning
+    make_date_time_cleaning,
+    make_forbidden_characters_cleaning,
+)
+
+from _dtypes_utils import (
+    make_solve_dtypes_cleaning
 )
 
 from _perColumn_utils import (
