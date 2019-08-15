@@ -42,7 +42,7 @@ def get_combinations_rule_details(combination, conditions):
         if condition in [True, False]:
             cur_rules[column] = ('is', condition, None)
         elif condition.startswith('range('):
-            cur_range_xy = [float(x) if x!= 'None' else None for x in re.split('\(|\)', condition)[1].split(',')]
+            cur_range_xy = [float(x) if x != 'None' else None for x in re.split('\(|\)', condition)[1].split(',')]
             if cur_range_xy[0] == None:
                 cur_rules[column] = ('<', cur_range_xy[1], None)
             elif cur_range_xy[1] == None:
@@ -149,7 +149,7 @@ def apply_combination_rule_check(row, cur_rules, columns_match, nan_decisions):
     return False
 
 
-def make_combinations_cleaning(md, combination, conditions_decision, nan_decisions):
+def make_combinations_cleaning(md, combination, conditions_decision, nan_decisions, nan_value):
     """
     Change column(s) based on the combination
     of factors in multiple columns.
@@ -168,6 +168,9 @@ def make_combinations_cleaning(md, combination, conditions_decision, nan_decisio
         [1] dict   : Edits to apply if conditions satisfied.
         e.g. [('range(0,4)', True), {'alcohol_consumption': 'Missing'}]
 
+    nan_value : str
+        Value to use for replacement for NaN / declared as such.
+
     Returns
     -------
     md : pd.DataFrame
@@ -180,7 +183,10 @@ def make_combinations_cleaning(md, combination, conditions_decision, nan_decisio
         conditions, decision = conditions_decision
         # conditions -->  ('range(0,4)', True)
         # decision   -->  {'alcohol_consumption': 'Missing'}
-        decision_key, decision_value = [(x, y) for x, y in decision.items()][0]
+        if isinstance(decision, dict):
+            decision_key, decision_value = [(x, y) for x, y in decision.items()][0]
+        else:
+            decision_key, decision_value = decision, nan_value
 
         # get the column name and dataframe's column that may be edited
         decision_col = list(set([x for x in md.columns if decision_key.lower() in x.lower()]))[0]
@@ -194,7 +200,9 @@ def make_combinations_cleaning(md, combination, conditions_decision, nan_decisio
 
         for rdx, (r, row) in enumerate(md[all_columns_match].iterrows()):
             # check if the combinations of the columns contents match the rule from the yaml file
-            rule_applies = apply_combination_rule_check(row, cur_rules, columns_match, nan_decisions)
+            rule_applies = apply_combination_rule_check(row, cur_rules,
+                                                        columns_match,
+                                                        nan_decisions)
 
             # if yes -> edit the current entry of the current decision column
             if rule_applies:

@@ -16,7 +16,9 @@ import os
 
 from _df_utils import (
     get_nan_value_and_sampleID_cols,
-    read_input_metadata
+    read_input_metadata,
+    write_clean_metadata,
+    write_clean_metadata_user
 )
 
 from _main_utils import (
@@ -60,7 +62,7 @@ from tests._utils_test import (
 
 
 
-def metadata_clean(yaml_rules_fp=None, do_dummy=True):
+def metadata_clean(yaml_rules_fp=None, do_dummy=False):
     """
     Main command running the tool.
     Needs setup using @click for the inputs...
@@ -87,7 +89,7 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=True):
             "tests", "cleaning_rules.yaml"
         )
     # Read the rules from the yaml fule
-    rules = get_yaml_rules(yaml_rules_fp, show_raw=False)
+    rules = get_yaml_rules(yaml_rules_fp, show_raw=True)
 
     # but the final user version will be written too at the end if different from np.nan
     nan_value_user, sampleID_cols = get_nan_value_and_sampleID_cols(rules)
@@ -96,6 +98,7 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=True):
     nan_value = 'nan'
 
     if do_dummy:
+        md_fp = None
         md_pd = build_dummy_dataset_for_lauriane_rules_testing()
     else:
         md_fp = os.path.join(
@@ -117,7 +120,8 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=True):
         for rule in ['nans', 'booleans']:
             if rule in rules:
                 output_col, nan_decisions = make_replacement_cleaning(input_col, name_col,
-                                                                      nan_decisions, nan_value,
+                                                                      nan_decisions,
+                                                                      nan_value,
                                                                       rules, rule)
                 md_pd[name_col] = output_col
 
@@ -141,7 +145,8 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=True):
     if 'combinations' in rules:
         for combination, conditions_decision in rules['combinations'].items():
             md_pd = make_combinations_cleaning(md_pd, combination,
-                                                       conditions_decision, nan_decisions)
+                                               conditions_decision,
+                                               nan_decisions, nan_value)
 
     # clean del_columns
     if 'del_columns' in rules:
@@ -150,13 +155,24 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=True):
 
     # clean forbidden_characters
     if 'forbidden_characters' in rules:
-        md_pd = make_forbidden_characters_cleaning(md_pd, rules['forbidden_characters'])
+        md_pd = make_forbidden_characters_cleaning(md_pd,
+                                                   rules['forbidden_characters'])
 
     # solve dtypes
     if 'solve_dtypes' in rules and rules['solve_dtypes']:
-        md_pd = make_solve_dtypes_cleaning(md_pd, nan_value, sampleID_cols)
+        md_pd = make_solve_dtypes_cleaning(md_pd, nan_value,
+                                           sampleID_cols)
 
+    if md_fp:
+        write_clean_metadata(md_fp, md_pd)
+        print(md_pd)
+        print("++nan_value_user")
+        print(nan_value_user)
+        md_pd = write_clean_metadata_user(md_fp, md_pd,
+                                          nan_value_user,
+                                          nan_value)
     print(md_pd)
+
 
 if __name__ == "__main__":
     metadata_clean()

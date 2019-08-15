@@ -7,6 +7,7 @@
 # The full license is in the file LICENSE.txt, distributed with this software.
 # ----------------------------------------------------------------------------
 
+import os
 import pandas as pd
 import numpy as np
 import getpass
@@ -29,8 +30,8 @@ def get_nan_value_and_sampleID_cols(rules):
     nan_value : str / np.nan
         Value to use for replacement for NaN / declared as such
     """
-    if 'nan_value' in rules:
-        nan_value = rules['nan_value']
+    if 'na_value' in rules:
+        nan_value = rules['na_value']
     else:
         nan_value = np.nan
 
@@ -75,27 +76,27 @@ def read_input_metadata(file_path, is_excel=False, as_str=None):
     return md_pd
 
 
-def write_clean_metadata(file_path, md_pd):
+def write_clean_metadata(fp, md_pd):
     """
     Write clean metadata file.
 
     Parameters
     ----------
-    file_path : str
+    fp : str
         Path to the original metadata file.
     """
-    file_path_out = '%s_clean.tsv' % os.path.splitext(file_path)[0]
-    md_pd.to_csv(file_path_out, index=False, sep='\t')
-    print('Written:', file_path_out)
+    fp_o = '%s_clean.tsv' % os.path.splitext(fp)[0]
+    md_pd.to_csv(fp_o, index=False, sep='\t')
+    print('Written:', fp_o)
 
 
-def write_clean_metadata_user(file_path, md_pd, nan_value_user, nan_value):
+def write_clean_metadata_user(fp, md_pd, nan_value_user, nan_value):
     """
     Write clean metadata file with user-specified NaN encoding
 
     Parameters
     ----------
-    file_path : str
+    fp : str
         Path to the original metadata file.
 
     md_pd : pd.DataFrame
@@ -111,10 +112,12 @@ def write_clean_metadata_user(file_path, md_pd, nan_value_user, nan_value):
         # edit to make another copy of the file with actual np.nan in the numeric columns
         # (so that these columns can be read as numeric)
         if str(getpass.getuser()):
-            file_path_out_usr = '%s_%s.tsv' % (os.path.splitext(file_path_out)[0], str(getpass.getuser()))
+            fp_o = '%s_%s.tsv' % (os.path.splitext(fp)[0], str(getpass.getuser()))
         else:
-            file_path_out_usr = '%s_user.tsv' % os.path.splitext(file_path_out)[0]
-        md_pd = md_pd.fillna(nan_value_user)
-        md_pd.to_csv(file_path_out_usr, index=False, sep='\t')
-        print('Written:', file_path_out_usr)
+            fp_o = '%s_user.tsv' % os.path.splitext(fp)[0]
+        print("nan_value_user")
+        print(nan_value_user)
+        md_pd = md_pd.fillna(str(nan_value_user))
+        md_pd.to_csv(fp_o, index=False, sep='\t')
+        print('Written:', fp_o)
     return md_pd

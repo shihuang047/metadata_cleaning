@@ -34,5 +34,5 @@ def get_yaml_rules(yaml_rules_fp, show_raw = False):
         for i,j in rules.items():
             print()
             print(i)
-            display(j)
+            print(j)
     return rules

@@ -181,7 +181,9 @@ def make_forbidden_characters_cleaning(md_pd, forbidden_rules):
         return md_pd
     for col in md_pd.columns:
         if str(md_pd[col].dtype) == 'object':
-            for k, v in forbidden_rules.items():
-                md_pd[col] = md_pd[col].str.replace(k, v)
+            cur_col = md_pd[col]
+            for k,v in forbidden_rules.items():
+                md_pd[col].replace(k,v,inplace=True)
     return md_pd
+
 

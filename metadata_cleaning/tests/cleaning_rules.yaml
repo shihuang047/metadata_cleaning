@@ -2,19 +2,19 @@ booleans: {'False': 'No', 'True': 'Yes'}
 combinations:
   ? !!python/tuple [age, alcohol_consumption]
   : - !!python/tuple ['range(0,4)', true]
-    - {alcohol_consumption: Missing}
+    - alcohol_consumption
   ? !!python/tuple [age, height]
   : - !!python/tuple ['range(0,4)', 'range(105,None)']
-    - {height: Missing}
+    - height
   ? !!python/tuple [age, weight]
   : - !!python/tuple ['range(0,4)', 'range(20,None)']
-    - {weight: Missing}
+    - weight
   ? !!python/tuple [alcohol, alcohol_consumption]
   : - !!python/tuple [true, false]
     - {alcohol_consumption: 'Yes'}
   ? !!python/tuple [sex, pregnant]
   : - !!python/tuple [male, true]
-    - {pregnant: .nan}
+    - {pregnant: NaN}
 del_columns: [latitude, longitude]
 forbidden_characters: {' ': _, '%': _, (: _, ): _, ',': _, /: _}
 na_value: Missing
@@ -39,4 +39,3 @@ time_format:
   columns: [COLLECTION_TIMESTAMP, COLLECTION_DATE, COLLECTION_TIME]
   format: DD/MM/YYYY HH:MM
   ranges: range(2011,2019)
-

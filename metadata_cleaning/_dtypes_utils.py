@@ -305,7 +305,8 @@ def make_solve_dtypes_cleaning(md_pd, nan_value, sampleID_cols):
 
     # get metadata factors that are short (length in the previous command) and frequent (freq here)
     certainly_NaNs = get_certainly_NaNs(potential_unks, md_pd, freq=10)
-    print('\nWarning: should not these be "%s" factors?:\n' % nan_value, ', '.join(certainly_NaNs.columns.tolist()))
+    if len(certainly_NaNs):
+        print('\nWarning: should not these be "%s" factors?:\n' % nan_value, ', '.join(certainly_NaNs.columns.tolist()))
 
     # get the final dtype by verifying the numeric column "without" the added nan_values
     dtypes_inferred, dtypes_final = get_dtypes_final(dtypes_inferred, md_pd, nan_value, sampleID_cols)
