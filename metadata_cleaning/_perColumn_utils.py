@@ -15,10 +15,8 @@ from _main_utils import make_replacement_cleaning
 
 def missing_decision(cur_range_xy, entry_float):
     """
-    Exectute the edit on the passed column based on either
-        (i)  a dictionary of replacements
-            (by running make_replacement_cleaning())
-        (ii) checking the values inside/outside a given range of values
+    Get the bool to tell whether the conditons
+    are met for cleaning.
 
     Parameters
     ----------

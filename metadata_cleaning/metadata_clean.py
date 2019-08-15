@@ -14,7 +14,6 @@
 
 import os
 
-
 from _df_utils import (
     get_nan_value_and_sampleID_cols,
     read_input_metadata
@@ -85,8 +84,11 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=True):
     # Read the rules from the yaml fule
     rules = get_yaml_rules(yaml_rules_fp, show_raw=False)
 
-    # get default NaN values to use in the per_column rules and the columns containing sample IDs
-    nan_value, sampleID_cols = get_nan_value_and_sampleID_cols(rules)
+    # but the final user version will be written too at the end if different from np.nan
+    nan_value_user, sampleID_cols = get_nan_value_and_sampleID_cols(rules)
+
+    # default NaN value will be used in the per_column rules
+    nan_value = 'nan'
 
     if do_dummy:
         md_pd = build_dummy_dataset_for_lauriane_rules_testing()
@@ -110,7 +112,7 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=True):
         for rule in ['nans', 'booleans']:
             if rule in rules:
                 output_col, nan_decisions = make_replacement_cleaning(input_col, name_col,
-                                                                      nan_decisions,
+                                                                      nan_decisions, nan_value,
                                                                       rules, rule)
                 md_pd[name_col] = output_col
 
@@ -126,18 +128,28 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=True):
     if 'per_column' in rules:
         for name_col, ranges_or_reps in rules['per_column'].items():
             md_pd, nan_decisions = make_per_column_cleaning(md_pd, name_col,
-                                                            ranges_or_reps, nan_value,
+                                                            ranges_or_reps,
+                                                            nan_value,
                                                             nan_decisions)
 
     # clean combinations
     if 'combinations' in rules:
         for combination, conditions_decision in rules['combinations'].items():
             md_pd = make_combinations_cleaning(md_pd, combination,
-                                               conditions_decision, nan_decisions)
+                                                       conditions_decision, nan_decisions)
 
+    # clean del_columns
     if 'del_columns' in rules:
         del_columns = [y.lower() for y in rules['del_columns']]
         md_pd = md_pd[[x for x in md_pd.columns if x.lower() not in del_columns]]
+
+    # clean forbidden_characters
+    if 'forbidden_characters' in rules:
+        md_pd = make_forbidden_characters_cleaning(md_pd, rules['forbidden_characters'])
+
+    # solve dtypes
+    if 'solve_dtypes' in rules and rules['solve_dtypes']:
+        md_pd = make_solve_dtypes_cleaning(md_pd, nan_value, sampleID_cols)
 
     print(md_pd)
 

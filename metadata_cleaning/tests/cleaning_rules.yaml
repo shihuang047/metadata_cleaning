@@ -16,8 +16,10 @@ combinations:
   : - !!python/tuple [male, true]
     - {pregnant: .nan}
 del_columns: [latitude, longitude]
+forbidden_characters: {' ': _, '%': _, (: _, ): _, ',': _, /: _}
 na_value: Missing
-nans: {Unknown: Missing, Unspecified: Missing, no data: Missing, not provided: Missing}
+nans: [Not provided, Not_provided, not provided, not_provided, Unknown, unknown, Unspecified,
+  unspecified, no data, no_data]
 per_column:
   age: ['range(0,120)']
   bloom_fraction: ['range(0,1)']
@@ -32,6 +34,7 @@ sample_id:
   check_sample_id_force: true
   check_sample_id_unique: true
   sample_id_cols: ['#SampleID', sample_name]
+solve_dtypes: true
 time_format:
   columns: [COLLECTION_TIMESTAMP, COLLECTION_DATE, COLLECTION_TIME]
   format: DD/MM/YYYY HH:MM
