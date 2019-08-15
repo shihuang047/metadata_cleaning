@@ -185,7 +185,21 @@ Command line to come (based on click), e.g.:
 ​
 ### yaml rules
 
-Note: Explanations are indicated in commented line: 
+This format is particularly ugly for non uses, but just check the rules one-by-one, it's not that hard.
+These are the current rules, which "key" names have to be respected:
+
+* `booleans`: which value to replace by numpy's `NaN` or the value of `na_value`
+* `combinations`: conditions to assess -> it violation -> `na_value`
+* `del_columns`: delete these columns
+* `forbidden_characters`: characters-replacement rules
+* `na_value`: value to use for replacement of violations
+* `nans`:  value to be replaced by `na_value`
+* `per_column`: per-column rules (see below)
+* `sample_id`: *[MANDATORY]* columns where there are samples IDs (or any values that should be read as strings) 
+* `solve_dtypes`: check the dtypes if the columns to return _numeric_ for numeric columns
+* `time_format`: tidy the formatting of the time/date
+
+Detailed explanations indicated in commented line.. which make the whole thing look even worse (just "_look_" worse).  
 
 ```
 ## dict to tell which value to replace [applies to all columns]
@@ -241,10 +255,12 @@ nans: [Not provided, Not_provided, not provided, not_provided, Unknown, unknown,
 
 ## dict of lists to tell which conditions to check for violations [applies to the column:]
 per_column:
+       # each 'range(x,y)' only check for violation (as for "combinations" rules)
   age: ['range(0,120)']
   bloom_fraction: ['range(0,1)']
   bmi: ['range(15,50)']
   country:
+    # a dictionary structure would just make replacements
   - {Cote D'ivoire: "C\xF4te d'Ivoire", 'Iran, Islamic Republic of': Iran (Islamic
       Republic of), Libyan Arab Jamahiriya: Libya, Reunion: "R\xE9union", US: United
       States, USA: United States, United States of America: United States}
@@ -254,8 +270,12 @@ per_column:
 ## tells which are the sample ID columns
 ## and if needs to check they are unique and if not how to edit them
 sample_id:
+  # force renaming for duplicated sample names
+  # (adds a incremental number, e.g. SAM_A.1, SAM_A.2, ...)
   check_sample_id_force: true
+  # check that sample IDs are unique
   check_sample_id_unique: true
+  # MOST USEFUL: to make sure these columns dtypes are set to str and stay unchanged
   sample_id_cols: ['#SampleID', sample_name]
 
 ## tells whether to solve the dtypes
