@@ -13,7 +13,7 @@ Metadata often need to be cleaned upfront in order to adress issues such as
 ## Install
 
 ```
-git clone
+git clone https://github.com/FranckLejzerowicz/metadata_cleaning.git
 cd metadata_cleaning
 python3 setup.py install
 ```
