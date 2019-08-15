@@ -124,17 +124,17 @@ def apply_combination_rule_check(row, cur_rules, columns_match, nan_decisions):
                 if not cur_rule[1] and str(row[md_col]) in ['False', 'No', '0']:
                     break
             elif cur_rule[0] == 'in':
-                if row[md_col] in nan_decisions[md_col]:
+                if row[md_col] in nan_decisions[md_col] or not str(row[md_col]).isdigit():
                     continue
                 if row[md_col] >= cur_rule[1] and row[md_col] <= cur_rule[2]:
                     break
             elif cur_rule[0] == '>':
-                if row[md_col] in nan_decisions[md_col]:
+                if row[md_col] in nan_decisions[md_col] or not str(row[md_col]).isdigit():
                     continue
                 if row[md_col] >= cur_rule[1]:
                     break
             elif cur_rule[0] == '<':
-                if row[md_col] in nan_decisions[md_col]:
+                if row[md_col] in nan_decisions[md_col] or not str(row[md_col]).isdigit():
                     continue
                 if row[md_col] <= cur_rule[2]:
                     break
