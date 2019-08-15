@@ -104,6 +104,7 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=True):
     nan_decisions = {}
     for name_col in md_pd.columns:
         nan_decisions[name_col] = set()
+        nan_decisions[name_col.lower()] = set()
         input_col = md_pd[name_col]
         # clean NaNs or Yes/No
         for rule in ['nans', 'booleans']:
