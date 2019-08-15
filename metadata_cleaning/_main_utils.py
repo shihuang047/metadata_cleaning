@@ -51,7 +51,7 @@ def make_replacement_cleaning(input_col, name_col, nan_decisions, rules, key=Non
         nan_decisions[name_col].update(edits)
         return output_col, nan_decisions
 
-    if name_col in rules['sample_id']['sample_id_cols']:
+    if 'sample_id' in rules and name_col in rules['sample_id']['sample_id_cols']:
         return input_col, nan_decisions
 
     input_col_dtype = str(input_col.dtype)
