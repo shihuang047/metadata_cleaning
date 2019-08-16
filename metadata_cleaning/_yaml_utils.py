@@ -10,7 +10,7 @@
 import yaml
 
 
-def get_yaml_rules(yaml_rules_fp, show_raw = False):
+def get_yaml_rules(yaml_rules_fp, show=False):
     """
     Read rules from the yaml file.
 
@@ -19,7 +19,7 @@ def get_yaml_rules(yaml_rules_fp, show_raw = False):
     yaml_rules_fp : str
         Path to the yaml file containing the cleaning rules.
 
-    show_raw : bool
+    show : bool
         Whether to show the rules.
 
     Returns
@@ -30,7 +30,7 @@ def get_yaml_rules(yaml_rules_fp, show_raw = False):
     with open(yaml_rules_fp) as f:
         rules = yaml.load(f)
 
-    if show_raw:
+    if show:
         for i,j in rules.items():
             print()
             print(i)

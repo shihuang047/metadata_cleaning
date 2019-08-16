@@ -97,7 +97,7 @@ def write_clean_metadata(metadata_pd, metadata_fp, output_fp):
         Path to the output metadata file.
     """
     if not output_fp:
-        output_fp = '%s_clean.tsv' % os.path.splitext(fp)[0]
+        output_fp = '%s_clean.tsv' % os.path.splitext(output_fp)[0]
     elif '.' not in output_fp or len(output_fp.split('.')[-1])>15:
         output_fp = '%s_clean.tsv' % output_fp
     metadata_pd.to_csv(output_fp, index=False, sep='\t')

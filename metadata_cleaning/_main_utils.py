@@ -76,7 +76,7 @@ def make_replacement_cleaning(input_col, name_col, nan_decisions, nan_value, rul
             return get_ouput_col_and_edits(name_col, input_col, nan_value, rules, nan_decisions)
 
 
-def make_sampleID_cleaning(md, sample_rules):
+def make_sampleID_cleaning(md, sample_rules, show=False):
     """
     Check and correct the sample identifiers.
     Print warnings if something wrong.
@@ -100,8 +100,9 @@ def make_sampleID_cleaning(md, sample_rules):
         input_col = md[sample_col].astype('str')
         if sample_rules['check_sample_id_unique']:
             if input_col.unique().size != input_col.size:
-                print('Warning: duplicate sample names in "%s"' % sample_col)
-                print(' (Duplication number: %s)' % sum(input_col.value_counts() > 1))
+                if show:
+                    print('Warning: duplicate sample names in "%s"' % sample_col)
+                    print(' (Duplication number: %s)' % sum(input_col.value_counts() > 1))
                 if sample_rules['check_sample_id_force']:
                     replicated = dict(input_col.value_counts())
                     new_ids = []

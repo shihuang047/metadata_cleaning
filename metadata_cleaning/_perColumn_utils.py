@@ -10,7 +10,7 @@
 import re
 import pandas as pd
 
-from _main_utils import make_replacement_cleaning
+from metadata_cleaning._main_utils import make_replacement_cleaning
 
 
 def missing_decision(cur_range_xy, entry_float):
@@ -87,7 +87,7 @@ def make_per_column_cleaning(md, name_col, ranges_or_reps, nan_value, nan_decisi
             if isinstance(range_or_rep, dict):
                 # always collect an edit value in the column (nan_decisions)
                 output_copy, nan_decisions = make_replacement_cleaning(output_copy, name_col,
-                                                                       nan_decisions,
+                                                                       nan_decisions, nan_value,
                                                                        range_or_rep, None)
             # could be more complicated range check rule
             elif range_or_rep.startswith('range('):

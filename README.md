@@ -1,5 +1,6 @@
 # metadata_cleaning
-Clean is a metadata curation tool that applies rules form the user and passed as a yaml file
+
+metadata_clean is a metadata curation tool that applies rules form the user and passed as a yaml file
 
 ## Description
 
@@ -15,7 +16,7 @@ Metadata often need to be cleaned upfront in order to adress issues such as
 ```
 git clone https://github.com/FranckLejzerowicz/metadata_cleaning.git
 cd metadata_cleaning
-python3 setup.py install
+python setup.py build_ext --inplace --force install
 ```
 
 ## Input / Output
@@ -90,10 +91,6 @@ The way to generate this file could be done in several ways:
             'per_column': {
                 'country': [
                     {
-                        "Cote D'ivoire": "Côte d'Ivoire",
-                        'Iran, Islamic Republic of': 'Iran (Islamic Republic of)',
-                        'Libyan Arab Jamahiriya': 'Libya',
-                        'Reunion': 'Réunion',
                         'USA': 'United States',
                         'United States of America': 'United States',
                         'US': 'United States'
@@ -125,7 +122,8 @@ The way to generate this file could be done in several ways:
 *This format can be written from a simpler user entry-point*
 
 ``metadata_cleaning/tests/cleaning_rules.yaml``
-(these rules have been extracted from the Danone queries: ``metadata_cleaning/tests/iternal/Danone_md_colInfos_n3844_AC_LR_AC_FL.txt``)
+(these rules have been extracted from the Danone queries: ``metadata_cleaning/tests/iternal
+/Danone_md_colInfos_n3844_AC_LR_AC_FL.txt``)
 
 
 Most directives are given in the yaml rules file, but arguments passed to command line could override (see below).
@@ -182,7 +180,8 @@ Command line to come (based on click), e.g.:
 | 10 |             8 |              1.5 | True  | 05/15/2015        | 11:05:00          | 03/05/15 11:00         |   110 | 0            | male  | HERE       | THERE       | True       |         20 |        100 |         100 | No            | No                   | No                    |
 | 11 |             9 |              1.7 | True  | 4/7/2015          | 15:30:00          | 04/07/15 15:30         |   120 | not provided | male  | HERE       | THERE       | True       |         20 |        100 |         100 | Yes           | No                   | No                    |
 | 12 |            10 |              1.9 | False | 04/16/15          | 13:15:00          | 04/16/2015 13:15       |   130 | Unspecified  | male  | HERE       | THERE       | True       |         20 |        100 |         100 | Yes           | No                   | No                    |
-​
+
+
 ### yaml rules
 
 This format is particularly ugly for non uses, but just check the rules one-by-one, it's not that hard.
@@ -195,7 +194,7 @@ These are the current rules, which "key" names have to be respected:
 * `na_value`: value to use for replacement of violations
 * `nans`:  value to be replaced by `na_value`
 * `per_column`: per-column rules (see below)
-* `sample_id`: *[MANDATORY]* columns where there are samples IDs (or any values that should be read as strings) 
+* `sample_id`: *MANDATORY* columns where there are samples IDs (or any values that should be read as strings) 
 * `solve_dtypes`: check the dtypes if the columns to return _numeric_ for numeric columns
 * `time_format`: tidy the formatting of the time/date
 
@@ -261,9 +260,7 @@ per_column:
   bmi: ['range(15,50)']
   country:
     # a dictionary structure would just make replacements
-  - {Cote D'ivoire: "C\xF4te d'Ivoire", 'Iran, Islamic Republic of': Iran (Islamic
-      Republic of), Libyan Arab Jamahiriya: Libya, Reunion: "R\xE9union", US: United
-      States, USA: United States, United States of America: United States}
+  - {US: United States, USA: United States, United States of America: United States}
   height: ['range(48,210)']
   weight: ['range(2.5,200)']
 

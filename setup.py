@@ -24,23 +24,15 @@ classes = """
     Operating System :: POSIX
     Operating System :: MacOS :: MacOS X
 """
-#classifiers = [s.strip() for s in classes.split("\n") if s]
 
 description = (
-    "Clean is a metadata curation tool that applies rules form the user and passed as a yaml file."
+    "metadata_clean is a metadata curation tool that applies rules form the user and passed as a yaml file."
 )
 
 with open("README.md") as f:
     long_description = f.read()
 
-### FROM MARCUS
-# TODO remove this if doable to simplify this.
-# See https://packaging.python.org/guides/single-sourcing-package-version/
-# -- option 6 is probably best, so long as we don't do something that would
-# require use of another dependency from qurro/__init__.py.
-#
-# version parsing from __init__ pulled from Flask's setup.py
-# https://github.com/mitsuhiko/flask/blob/master/setup.py
+
 _version_re = re.compile(r"__version__\s+=\s+(.*)")
 
 with open("metadata_cleaning/__init__.py", "rb") as f:
@@ -67,7 +59,6 @@ setup(
     include_package_data=True,
     install_requires=[
         "click",
-       # "yaml",
         "pyyaml",
         "pandas"
     ],

@@ -14,36 +14,36 @@
 
 import os, sys
 
-from _df_utils import (
+from metadata_cleaning._df_utils import (
     get_nan_value_and_sampleID_cols,
     read_input_metadata,
     write_outputs
 )
 
-from _main_utils import (
+from metadata_cleaning._main_utils import (
     make_replacement_cleaning,
     make_sampleID_cleaning,
     make_date_time_cleaning,
     make_forbidden_characters_cleaning,
 )
 
-from _dtypes_utils import (
+from metadata_cleaning._dtypes_utils import (
     make_solve_dtypes_cleaning
 )
 
-from _perColumn_utils import (
+from metadata_cleaning._perColumn_utils import (
     make_per_column_cleaning
 )
 
-from _yaml_utils import (
+from metadata_cleaning._yaml_utils import (
     get_yaml_rules
 )
 
-from _combis_utils import (
+from metadata_cleaning._combis_utils import (
     make_combinations_cleaning
 )
 
-from tests._utils_test import (
+from metadata_cleaning.tests._utils_test import (
     build_dummy_dataset_for_lauriane_rules_testing
 )
 
@@ -94,7 +94,7 @@ def parse_yaml_file(yaml_rules_fp=None, show=False):
             "tests", "cleaning_rules.yaml"
         )
     # Read the rules from the yaml fule
-    rules = get_yaml_rules(yaml_rules_fp, show_rules)
+    rules = get_yaml_rules(yaml_rules_fp, show)
     # but the final user version will be written too at the end if different from np.nan
     nan_value_user, sampleID_cols = get_nan_value_and_sampleID_cols(rules)
     # default NaN value will be used in the per_column rules
@@ -102,7 +102,7 @@ def parse_yaml_file(yaml_rules_fp=None, show=False):
     return rules, nan_value, nan_value_user, sampleID_cols
 
 
-def parse_metadata_files(metadata_fp=None, do_dummy=False):
+def parse_metadata_files(sampleID_cols, metadata_fp=None, do_dummy=False):
     """
     Main command running the tool.
     Needs setup using @click for the inputs.
@@ -112,6 +112,9 @@ def parse_metadata_files(metadata_fp=None, do_dummy=False):
     metadata_fp : str
         File path for the metadata file
         if either excel of tab-separated format.
+
+    sampleID_cols : list
+        Names of the columns containing the sample IDs
 
     do_dummy : bool
         Tells whether to jsut run things
