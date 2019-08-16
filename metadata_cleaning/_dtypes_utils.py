@@ -275,7 +275,7 @@ def rectify_dtypes_in_md(md_pd, dtypes_final):
     return md_pd
 
 
-def make_solve_dtypes_cleaning(md_pd, nan_value, sampleID_cols):
+def make_solve_dtypes_cleaning(md_pd, nan_value, sampleID_cols, show=None):
     """
     Run functions to understand and treat dtypes information.
 
@@ -305,7 +305,7 @@ def make_solve_dtypes_cleaning(md_pd, nan_value, sampleID_cols):
 
     # get metadata factors that are short (length in the previous command) and frequent (freq here)
     certainly_NaNs = get_certainly_NaNs(potential_unks, md_pd, freq=10)
-    if len(certainly_NaNs):
+    if len(certainly_NaNs) and show:
         print('\nWarning: should not these be "%s" factors?:\n' % nan_value, ', '.join(certainly_NaNs.columns.tolist()))
 
     # get the final dtype by verifying the numeric column "without" the added nan_values

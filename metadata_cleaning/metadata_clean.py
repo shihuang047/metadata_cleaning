@@ -17,8 +17,7 @@ import os, sys
 from _df_utils import (
     get_nan_value_and_sampleID_cols,
     read_input_metadata,
-    write_clean_metadata,
-    write_clean_metadata_user
+    write_outputs
 )
 
 from _main_utils import (
@@ -61,61 +60,139 @@ from tests._utils_test import (
 #)
 
 
-
-def metadata_clean(yaml_rules_fp=None, do_dummy=False):
+def parse_yaml_file(yaml_rules_fp=None, show=False):
     """
     Main command running the tool.
-    Needs setup using @click for the inputs...
+    Needs setup using @click for the inputs.
 
     Parameters
     ----------
-    dtypes_final : dict
-        dtypes inferred from the metadata and verified
-        e.g. {'sample_name': 'O',
-              ...
-              'age_years': 'Q'}
+    yaml_rules_fp : str
+        File path for the rules in yaml format.
 
-    md_pd : pd.DataFrame
-        original metadata table
+    show : bool
+        Activate verbose.
 
     Returns
     -------
-    md_pd : pd.DataFrame
-        final metadata table with updated dtypes
-    """
+    rules : dict
+        All rules in the following keys:
+            ['booleans', 'combinations', 'nans', 'del_columns', 'forbidden_characters', 'na_value',
+             'solve_dtypes', 'per_column', 'sample_id', 'time_format'] (or more to come...)
 
+    nan_value : str
+        Value to use for replacement for NaN / declared as such.
+
+    nan_value_user : str
+        Value to use for replacement for NaN declared by user.
+
+    sampleID_cols : list
+        Names of the columns containing the sample IDs
+    """
     if not yaml_rules_fp:
         yaml_rules_fp = os.path.join(
             "tests", "cleaning_rules.yaml"
         )
     # Read the rules from the yaml fule
-    rules = get_yaml_rules(yaml_rules_fp, show_raw=True)
-
+    rules = get_yaml_rules(yaml_rules_fp, show_rules)
     # but the final user version will be written too at the end if different from np.nan
     nan_value_user, sampleID_cols = get_nan_value_and_sampleID_cols(rules)
-
     # default NaN value will be used in the per_column rules
     nan_value = 'nan'
+    return rules, nan_value, nan_value_user, sampleID_cols
 
+
+def parse_metadata_files(metadata_fp=None, do_dummy=False):
+    """
+    Main command running the tool.
+    Needs setup using @click for the inputs.
+
+    Parameters
+    ----------
+    metadata_fp : str
+        File path for the metadata file
+        if either excel of tab-separated format.
+
+    do_dummy : bool
+        Tells whether to jsut run things
+        on the dummy dataset.
+
+    Returns
+    -------
+    metadata_pd : pd.DataFrame
+        Metadata data frame.
+    """
     if do_dummy:
-        md_fp = None
-        md_pd = build_dummy_dataset_for_lauriane_rules_testing()
+        metadata_fp = None
+        metadata_pd = build_dummy_dataset_for_lauriane_rules_testing()
     else:
-        md_fp = os.path.join(
-            "tests", "dummy.tsv"
-            # "tests", "internal", "2019.07.17_danone_md_n3844_selection_draft.xlsx"
-            # "tests", "internal", "meta_16S_3577s.tsv"
-        )
-        if 'xls' in os.path.splitext(md_fp)[1]:
-            md_pd = read_input_metadata(md_fp, True, sampleID_cols)
+        if not metadata_fp:
+            metadata_fp = os.path.join(
+                "tests", "dummy.tsv"
+                # "tests", "internal", "2019.07.17_danone_md_n3844_selection_draft.xlsx"
+                # "tests", "internal", "meta_16S_3577s.tsv"
+            )
         else:
-            md_pd = read_input_metadata(md_fp, False, sampleID_cols)
+            metadata_pd = metadata_fp
+        if 'xls' in os.path.splitext(metadata_fp)[1]:
+            metadata_pd = read_input_metadata(metadata_fp, True, sampleID_cols)
+        else:
+            metadata_pd = read_input_metadata(metadata_fp, False, sampleID_cols)
+    return metadata_pd
+
+
+def metadata_clean(
+        rules,
+        nan_value,
+        nan_value_user,
+        sampleID_cols,
+        metadata_pd,
+        metadata_fp,
+        output_fp=None,
+        show=True
+):
+    """
+    Main command running the cleaning.
+
+    Parameters
+    ----------
+    rules : dict
+        All rules in the following keys:
+            ['booleans', 'combinations', 'nans', 'del_columns', 'forbidden_characters', 'na_value',
+             'solve_dtypes', 'per_column', 'sample_id', 'time_format'] (or more to come...)
+
+    nan_value : str
+        Value to use for replacement for NaN / declared as such.
+
+    nan_value_user : str
+        Value to use for replacement for NaN declared by user.
+
+    sampleID_cols : list
+        Names of the columns containing the sample IDs
+
+    metadata_pd : pd.DataFrame
+        Metadata table.
+
+    metadata_fp : str
+        Input file path
+
+    output_fp : str
+        Output file path
+
+    show : bool
+        Activate verbose.
+
+    Returns
+    -------
+    metadata_pd : pd.DataFrame
+        final metadata table with updated dtypes
+    """
 
     nan_decisions = {}
-    for name_col in md_pd.columns:
+    for name_col in metadata_pd.columns:
         nan_decisions[name_col] = set()
         nan_decisions[name_col.lower()] = set()
-        input_col = md_pd[name_col]
+        input_col = metadata_pd[name_col]
         # clean NaNs or Yes/No
         for rule in ['nans', 'booleans']:
             if rule in rules:
@@ -123,22 +200,22 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=False):
                                                                       nan_decisions,
                                                                       nan_value,
                                                                       rules, rule)
-                md_pd[name_col] = output_col
+                metadata_pd[name_col] = output_col
 
     # correct sample ID
     if 'sample_id' not in rules:
         print('Error: "sample_id" in a mandatory rule')
         sys.exit(1)
-    md_pd = make_sampleID_cleaning(md_pd, rules['sample_id'])
+    metadata_pd = make_sampleID_cleaning(metadata_pd, rules['sample_id'], show)
 
     # correct time
     if 'time_format' in rules:
-        md_pd = make_date_time_cleaning(md_pd, rules)
+        metadata_pd = make_date_time_cleaning(metadata_pd, rules)
 
     # clean per_column
     if 'per_column' in rules:
         for name_col, ranges_or_reps in rules['per_column'].items():
-            md_pd, nan_decisions = make_per_column_cleaning(md_pd, name_col,
+            metadata_pd, nan_decisions = make_per_column_cleaning(metadata_pd, name_col,
                                                             ranges_or_reps,
                                                             nan_value,
                                                             nan_decisions)
@@ -146,36 +223,44 @@ def metadata_clean(yaml_rules_fp=None, do_dummy=False):
     # clean combinations
     if 'combinations' in rules:
         for combination, conditions_decision in rules['combinations'].items():
-            md_pd = make_combinations_cleaning(md_pd, combination,
-                                               conditions_decision,
-                                               nan_decisions, nan_value)
+            metadata_pd = make_combinations_cleaning(
+                metadata_pd,
+                combination,
+                conditions_decision,
+                nan_decisions,
+                nan_value
+            )
 
     # clean del_columns
     if 'del_columns' in rules:
         del_columns = [y.lower() for y in rules['del_columns']]
-        md_pd = md_pd[[x for x in md_pd.columns if x.lower() not in del_columns]]
+        metadata_pd = metadata_pd[[x for x in metadata_pd.columns if x.lower() not in del_columns]]
 
     # clean forbidden_characters
     if 'forbidden_characters' in rules:
-        md_pd = make_forbidden_characters_cleaning(md_pd,
-                                                   rules['forbidden_characters'])
+        metadata_pd = make_forbidden_characters_cleaning(
+            metadata_pd,
+            rules['forbidden_characters']
+        )
 
     # solve dtypes
     if 'solve_dtypes' in rules and rules['solve_dtypes']:
-        md_pd = make_solve_dtypes_cleaning(md_pd, nan_value,
-                                           sampleID_cols)
+        metadata_pd = make_solve_dtypes_cleaning(
+            metadata_pd,
+            nan_value,
+            sampleID_cols,
+            show
+        )
 
-    if md_fp:
-        write_clean_metadata(md_fp, md_pd)
-        print(md_pd)
-        print("++nan_value_user")
-        print(nan_value_user)
-        md_pd = write_clean_metadata_user(md_fp, md_pd,
-                                          nan_value_user,
-                                          nan_value)
-    print(md_pd)
+    # write outputs
+    clean_metadata_fps = write_outputs(
+        metadata_pd,
+        metadata_fp,
+        output_fp,
+        nan_value,
+        nan_value_user
+    )
 
+    return clean_metadata_fps
 
-if __name__ == "__main__":
-    metadata_clean()
 

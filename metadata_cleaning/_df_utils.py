@@ -76,48 +76,90 @@ def read_input_metadata(file_path, is_excel=False, as_str=None):
     return md_pd
 
 
-def write_clean_metadata(fp, md_pd):
+def write_clean_metadata(metadata_pd, metadata_fp, output_fp):
     """
     Write clean metadata file.
 
     Parameters
     ----------
-    fp : str
+    metadata_pd : str
+        Clean metadata table.
+
+    metadata_fp : str
         Path to the original metadata file.
+
+    output_fp : str
+        Path to the output metadata file.
+
+    Returns
+    -------
+    output_fp : str
+        Path to the output metadata file.
     """
-    fp_o = '%s_clean.tsv' % os.path.splitext(fp)[0]
-    md_pd.to_csv(fp_o, index=False, sep='\t')
-    print('Written:', fp_o)
+    if not output_fp:
+        output_fp = '%s_clean.tsv' % os.path.splitext(fp)[0]
+    elif '.' not in output_fp or len(output_fp.split('.')[-1])>15:
+        output_fp = '%s_clean.tsv' % output_fp
+    metadata_pd.to_csv(output_fp, index=False, sep='\t')
+    return output_fp
 
 
-def write_clean_metadata_user(fp, md_pd, nan_value_user, nan_value):
+def write_clean_metadata_user(metadata_pd, metadata_fp, output_fp, nan_value_user):
     """
     Write clean metadata file with user-specified NaN encoding
 
     Parameters
     ----------
-    fp : str
+    metadata_pd : str
+        Clean metadata table.
+
+    metadata_fp : str
         Path to the original metadata file.
 
-    md_pd : pd.DataFrame
-        Metadata table in pandas dataframe format.
+    output_fp : str
+        Path to the output metadata file.
 
     nan_value_user : str
         Value to use for replacement for NaN declared by user.
 
-    nan_value : np.nan
-        Value to use for replacement for NaN.
+
+    Returns
+    -------
+    output_fp : str
+        Path to the output metadata file.
     """
-    if nan_value_user != nan_value:
-        # edit to make another copy of the file with actual np.nan in the numeric columns
-        # (so that these columns can be read as numeric)
+    # edit to make another copy of the file with actual np.nan in the numeric columns
+    # (so that these columns can be read as numeric)
+    if not output_fp:
         if str(getpass.getuser()):
-            fp_o = '%s_%s.tsv' % (os.path.splitext(fp)[0], str(getpass.getuser()))
+            output_fp = '%s_%s.tsv' % (os.path.splitext(metadata_fp)[0], str(getpass.getuser()))
         else:
-            fp_o = '%s_user.tsv' % os.path.splitext(fp)[0]
-        print("nan_value_user")
-        print(nan_value_user)
-        md_pd = md_pd.fillna(str(nan_value_user))
-        md_pd.to_csv(fp_o, index=False, sep='\t')
-        print('Written:', fp_o)
-    return md_pd
+            output_fp = '%s_user.tsv' % os.path.splitext(metadata_fp)[0]
+    elif '.' not in output_fp or len(output_fp.split('.')[-1]) > 15:
+        output_fp = '%s_clean_%s.tsv' % (output_fp, str(getpass.getuser()))
+    metadata_pd = metadata_pd.fillna(str(nan_value_user))
+    metadata_pd.to_csv(output_fp, index=False, sep='\t')
+    return output_fp
+
+
+def write_outputs(metadata_pd, metadata_fp, output_fp, nan_value, nan_value_user):
+
+    clean_metadata_fps = []
+
+    clean_metadata_fps.append(
+        write_clean_metadata(
+            metadata_pd,
+            metadata_fp,
+            output_fp
+        )
+    )
+    if nan_value_user != nan_value:
+        clean_metadata_fps.append(
+            write_clean_metadata_user(
+                metadata_pd,
+                metadata_fp,
+                nan_value_user,
+                output_fp
+            )
+        )
+    return clean_metadata_fps
