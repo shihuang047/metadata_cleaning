@@ -18,3 +18,4 @@ __pycache__
 
 # folders
 docs
+metadata_cleaning/tests/internal/
