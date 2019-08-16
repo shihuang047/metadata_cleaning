@@ -1,0 +1,14 @@
+booleans: {'False': 'No', 'True': 'Yes'}
+# combinations:
+# del_columns: []
+# forbidden_characters: {}
+na_value: Missing
+nans: [Not provided, Not_provided, not provided, not_provided, Unknown, unknown, Unspecified,
+  unspecified, no data, no_data]
+# per_column:
+sample_id:
+  check_sample_id_force: true
+  check_sample_id_unique: true
+  sample_id_cols: ['#SampleID', sample_name]
+solve_dtypes: true
+#time_format:

@@ -21,20 +21,22 @@ python setup.py build_ext --inplace --force install
 
 ## Input / Output
 
-*Look at the [dummy input-output metadata table examples below](README.md#examples), and the yaml example too (encoding
- the cleaning rules from the Danone team)*
+*Look at the [dummy input-output metadata table examples below](README.md#examples), tailored for a set of rules in
+ the yaml example*
 
 ## Inputs
 
 #### Metadata
-It works well on the Danone files, e.g.:
-* Current metadata selection for the shotgun campaign of AIM1: `metadata_cleaning/tests/internal/2019.07
-.17_danone_md_n3844_selection_draft.xlsx`
-* Metadata for the Danone fermentation project: `metadata_cleaning/tests/internal/meta_16S_3577s.tsv`
-* There is a dummy file that's hard coded in the "__main__"  of `metadata_clean.py` (and also written in
- `metadata_cleaning/tests/dummy.tsv`).
+
+There is a dummy metadata file for install testing in `metadata_cleaning/tests/dummy.tsv`.
+
+Any tab-separate or excel table that contains the observations in rows and the metadata variables in columns. Typical
+ metadata examples and format can be found in the [QIIME2 tutorial](https://docs.qiime2.org/2018.11/tutorials/metadata/)  
 
 #### Yaml rules
+
+There is an example of a yaml rules file in ``metadata_cleaning/tests/cleaning_rules.yaml``
+There is a simplest template yaml rules file in ``metadata_cleaning/scripts/cleaning_rules_template.yaml``
 
 The way to generate this file could be done in several ways:
 
@@ -121,14 +123,10 @@ The way to generate this file could be done in several ways:
 
 *To Do: this format should be written from a simpler user entry-point*
 
-``metadata_cleaning/tests/cleaning_rules.yaml``
-(these rules have been extracted from the Danone team queries: ``metadata_cleaning/tests/iternal
-/Danone_md_colInfos_n3844_AC_LR_AC_FL.txt``)
+Most directives are given in the yaml rules file, but arguments passed to command line could override or prevent the
+ performing of specific cleaning steps (see [below](README.md#optional-arguments)).
 
-Most directives are given in the yaml rules file, but arguments passed to command line could override (see [below
-](README.md#optional-arguments)).
-
-**Attention**: for the rules "combinations", the order imports: a column might have to be cleaned based on another
+**Attention**: for the rules "combinations", the order matters: a column might have to be cleaned based on another
  column that has already been cleaned! 
 
 ## Outputs
