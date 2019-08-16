@@ -21,7 +21,7 @@ python setup.py build_ext --inplace --force install
 
 ## Input / Output
 
-*Look at the dummy input / output metadata table examples below, and the yaml example too (encoding the cleaning
+*Look at the [dummy input / output metadata table examples below](##Examples), and the yaml example too (encoding the cleaning
  rules from the Danone team)*
 
 ## Inputs
@@ -39,7 +39,7 @@ It works well on the Danone files, e.g.:
 The way to generate this file could be done in several ways:
 
 * Use the yaml rules maker (**TO DO**: develop a helper tool based on `raw_input`)
-* Direct writing in yaml: see example below
+* Direct writing in yaml: see [example below](###yaml-rules)
 * Python dictionary-based:
     * Write the rules as a dictionary, e.g.
         ```
@@ -119,14 +119,14 @@ The way to generate this file could be done in several ways:
 
 *Some systematic rules need to be defined*
 
-*This format can be written from a simpler user entry-point*
+*To Do: this format should be written from a simpler user entry-point*
 
 ``metadata_cleaning/tests/cleaning_rules.yaml``
-(these rules have been extracted from the Danone queries: ``metadata_cleaning/tests/iternal
+(these rules have been extracted from the Danone team queries: ``metadata_cleaning/tests/iternal
 /Danone_md_colInfos_n3844_AC_LR_AC_FL.txt``)
 
-
-Most directives are given in the yaml rules file, but arguments passed to command line could override (see below).
+Most directives are given in the yaml rules file, but arguments passed to command line could override (see [below
+](###Optional-arguments)).
 
 **Attention**: for the rules "combinations", the order imports: a column might have to be cleaned based on another
  column that has already been cleaned! 
@@ -143,17 +143,13 @@ For now, two versions of the cleaned metadata are written:
 ## Usage
 
 ```
-cd metadata_cleaning/script
-cleaning.py [OPTIONS]
+./metadata_cleaning/script/cleaning.py [OPTIONS]
 ```
+*It's possible that you first need to `chmod 755 ./metadata_cleaning/script/cleaning.py`*
 
 ### Optional arguments
 
 ```
-TODO
-  Perform the cleaning of metadata on command line.
-
-Options:
   -r, -r-yaml-file TEXT           Rules file in yaml format.  [required]
   -m, --m-metadata-file TEXT      Metadata file  [required]
   -o, --o-metadata-file TEXT      Output Metadata file name (Default:
@@ -213,11 +209,10 @@ Options:
 | 11 |             9 |              1.7 | True  | 4/7/2015          | 15:30:00          | 04/07/15 15:30         |   120 | not provided | male  | HERE       | THERE       | True       |         20 |        100 |         100 | Yes           | No                   | No                    |
 | 12 |            10 |              1.9 | False | 04/16/15          | 13:15:00          | 04/16/2015 13:15       |   130 | Unspecified  | male  | HERE       | THERE       | True       |         20 |        100 |         100 | Yes           | No                   | No                    |
 
-
 ### yaml rules
 
-This format is particularly ugly for non uses, but just check the rules one-by-one, it's not that hard.
-These are the current rules, which "key" names have to be respected:
+This format is particularly ugly for non-users, but just check the rules one-by-one, it's not that hard.
+These are the current rules, which "key" names have to be as follows:
 
 * `booleans`: which value to replace by numpy's `NaN` or the value of `na_value`
 * `combinations`: conditions to assess -> it violation -> `na_value`
@@ -237,8 +232,8 @@ Detailed explanations indicated in commented line.. which make the whole thing l
 ## (the lowercase cases will be taken into account)
 booleans: {'False': 'No', 'True': 'Yes'}
 
-# nested dict to tell which multiple conditions to assess
-# and on which column to make a resulting edit [applies to the {<column>: }]
+## nested dict to tell which multiple conditions to assess
+## and on which column to make a resulting edit [applies to the {<column>: }]
 ## NOTE1: THE ORDER MAY MATTER!
 ## NOTE2: FOR THE "range(x,y)", THE DATA MUST BE:
 ##            e.g. range(0,4)      means 0 >= data >= 4
