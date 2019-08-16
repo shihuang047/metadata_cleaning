@@ -143,23 +143,55 @@ For now, two versions of the cleaned metadata are written:
 ## Usage
 
 ```
-cd metadata_cleaning
-./metadata_clean.py
+cd metadata_cleaning/script
+cleaning.py [OPTIONS]
 ```
 
 ### Optional arguments
 
 ```
 TODO
+  Perform the cleaning of metadata on command line.
+
+Options:
+  -r, -r-yaml-file TEXT           Rules file in yaml format.  [required]
+  -m, --m-metadata-file TEXT      Metadata file  [required]
+  -o, --o-metadata-file TEXT      Output Metadata file name (Default:
+                                  '*_clean.tsv'). If 'na_value' from the yaml
+                                  of option '-na' is not 'nan' (i.e. the
+                                  numpy's NaN), then another ouput file will
+                                  be generated, with
+                                  '<previous_output>_<username>.tsv')
+  -na, --nan-value TEXT           Value to be use to replace the missing or
+                                  violating entries. Violations are detected
+                                  based on the rules of the yaml file.
+  -s, --sample-id TEXT            List of columns names containing samples
+                                  IDs. (or any other column(s) which may
+                                  contain numeric and should not be
+                                  interpreted as number.
+  -boo, --no-booleans             [YAML] Do not replace the True/False
+                                  ('booleans' rules)
+  -com, --no-combinations         [YAML] Do not check the conditions of
+                                  combinations ('combinations' rules)
+  -del, --no-del-columns          [YAML] Do not delete the given columns
+                                  ('del_columns' rule)
+  -for, --no-forbidden-characters
+                                  [YAML] Do not replace the given forbidden
+                                  characters ('forbidden_characters' rules)
+  -nan, --no-nans                 [YAML] Do not clean the values of 'nans'
+                                  ('nans' rules)
+  -per, --no-per-column           [YAML] Do not apply the per-column rules
+                                  ('per_column' rules)
+  -sol, --no-solve-dtypes         [YAML] Do not check the dtypes of the
+                                  columns ('solve_dtypes' rule)
+  -tim, --no-time-format          [YAML] Do not clean the formatting of the
+                                  time/date ('time_format' rule)
+  -v, --verbose                   Show the rules and other info about
+                                  encountered issue while cleaning.
+  --version                       Show the version and exit.
+  --help                          Show this message and exit.
+
 ```
-
-Command line to come (based on click), e.g.:
-* --input-metadata
-* --input-yaml
-* --edit-ids
-* --na_value
-* ...
-
 
 ## Examples
 
