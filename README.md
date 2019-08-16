@@ -21,9 +21,8 @@ python setup.py build_ext --inplace --force install
 
 ## Input / Output
 
-*Look at the [dummy input / output metadata table examples below](##-examples), and the yaml example too (encoding
- the cleaning
- rules from the Danone team)*
+*Look at the [dummy input-output metadata table examples below](README.md#examples), and the yaml example too (encoding
+ the cleaning rules from the Danone team)*
 
 ## Inputs
 
@@ -40,7 +39,7 @@ It works well on the Danone files, e.g.:
 The way to generate this file could be done in several ways:
 
 * Use the yaml rules maker (**TO DO**: develop a helper tool based on `raw_input`)
-* Direct writing in yaml: see [example below](###-yaml-rules)
+* Direct writing in yaml: see [example below](README.md#input-yaml-rules)
 * Python dictionary-based:
     * Write the rules as a dictionary, e.g.
         ```
@@ -127,7 +126,7 @@ The way to generate this file could be done in several ways:
 /Danone_md_colInfos_n3844_AC_LR_AC_FL.txt``)
 
 Most directives are given in the yaml rules file, but arguments passed to command line could override (see [below
-](###-optional-arguments)).
+](README.md#optional-arguments)).
 
 **Attention**: for the rules "combinations", the order imports: a column might have to be cleaned based on another
  column that has already been cleaned! 
@@ -210,7 +209,7 @@ For now, two versions of the cleaned metadata are written:
 | 11 |             9 |              1.7 | True  | 4/7/2015          | 15:30:00          | 04/07/15 15:30         |   120 | not provided | male  | HERE       | THERE       | True       |         20 |        100 |         100 | Yes           | No                   | No                    |
 | 12 |            10 |              1.9 | False | 04/16/15          | 13:15:00          | 04/16/2015 13:15       |   130 | Unspecified  | male  | HERE       | THERE       | True       |         20 |        100 |         100 | Yes           | No                   | No                    |
 
-### yaml rules
+### Input yaml rules
 
 This format is particularly ugly for non-users, but just check the rules one-by-one, it's not that hard.
 These are the current rules, which "key" names have to be as follows:
