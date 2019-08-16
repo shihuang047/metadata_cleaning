@@ -60,6 +60,7 @@ setup(
     install_requires=[
         "click",
         "pyyaml",
+        "numpy",
         "pandas"
     ],
     ## Based on how Altair splits up its requirements:

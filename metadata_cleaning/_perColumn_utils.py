@@ -15,7 +15,7 @@ from metadata_cleaning._main_utils import make_replacement_cleaning
 
 def missing_decision(cur_range_xy, entry_float):
     """
-    Get the bool to tell whether the conditons
+    Get the bool to tell whether the conditions
     are met for cleaning.
 
     Parameters
@@ -33,10 +33,10 @@ def missing_decision(cur_range_xy, entry_float):
     bool
         Whether the value is not in the range.
     """
-    # check whether the current value is oustide the given range
-    if cur_range_xy[0] == None and entry_float > cur_range_xy[1]:
+    # check whether the current value is outside the given range
+    if not cur_range_xy[0] and entry_float > cur_range_xy[1]:
         return True
-    elif cur_range_xy[1] == None and entry_float < cur_range_xy[0]:
+    elif not cur_range_xy[1] and entry_float < cur_range_xy[0]:
         return True
     elif entry_float > cur_range_xy[1] or entry_float < cur_range_xy[0]:
         return True
@@ -44,9 +44,9 @@ def missing_decision(cur_range_xy, entry_float):
         return False
 
 
-def make_per_column_cleaning(md, name_col, ranges_or_reps, nan_value, nan_decisions):
+def make_per_column_cleaning(md, name_col, sample_id_cols, ranges_or_reps, nan_value, nan_decisions):
     """
-    Exectute the edit on the passed column based on either
+    Execute the edit on the passed column based on either
         (i)  a dictionary of replacements
             (by running make_replacement_cleaning())
         (ii) checking the values inside/outside a given range of values
@@ -58,6 +58,9 @@ def make_per_column_cleaning(md, name_col, ranges_or_reps, nan_value, nan_decisi
 
     name_col : str
         Name of the passed column.
+
+    sample_id_cols : list
+        Names of the columns containing the sample IDs
 
     ranges_or_reps : dict
         All rules for the current columns placeholder,
@@ -76,17 +79,18 @@ def make_per_column_cleaning(md, name_col, ranges_or_reps, nan_value, nan_decisi
         Metadata with cleaned columns.
     """
     # get the columns that match the given column name
-    ## => TO BE SET TO PERFECT MATCH --> discussion
+    # => TO BE SET TO PERFECT MATCH --> discussion
     cols_to_edit = [x for x in md.columns if name_col.lower() in x.lower()]
     for col_to_edit in cols_to_edit:
         output_copy = md[col_to_edit].copy()
-        #  for eahc actual rule to apply on the column content
+        #  for each actual rule to apply on the column content
         for range_or_rep in ranges_or_reps:
 
             # could be simple factors replacement rule
             if isinstance(range_or_rep, dict):
                 # always collect an edit value in the column (nan_decisions)
                 output_copy, nan_decisions = make_replacement_cleaning(output_copy, name_col,
+                                                                       sample_id_cols,
                                                                        nan_decisions, nan_value,
                                                                        range_or_rep, None)
             # could be more complicated range check rule
@@ -107,7 +111,7 @@ def make_per_column_cleaning(md, name_col, ranges_or_reps, nan_value, nan_decisi
                             nan_decisions[col_to_edit].add(nan_value)
                         else:
                             new_col.append(entry)
-                    except:
+                    except ValueError:
                         new_col.append(entry)
                 # get the edited column as a pandas Series
                 output_copy = pd.Series(new_col)

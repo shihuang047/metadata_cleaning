@@ -6,50 +6,44 @@
 #
 # The full license is in the file LICENSE.txt, distributed with this software.
 # ----------------------------------------------------------------------------
-
 import click
-import argparse
-
-
 from metadata_cleaning.metadata_clean import (
-    parse_yaml_file,
-    parse_metadata_files,
-    metadata_clean,
+    metadata_clean
 )
+
+from metadata_cleaning._yaml_utils import parse_yaml_file
+
+from metadata_cleaning._df_utils import parse_metadata_file
 
 from metadata_cleaning import __version__
 
 
 @click.command()
 @click.option(
-#parser.add_argument(
     "-r",
     "--r-yaml-file",
     required=True,
     help="Rules file in yaml format."
 )
 @click.option(
-#parser.add_argument(
     "-m",
     "--m-metadata-file",
     required=True,
     help="Metadata file"
 )
 @click.option(
-#parser.add_argument(
     "-o",
     "--o-metadata-file",
     required=False,
     default=None,
     help=(
-        "Output Metadata file name (Default: '*_clean.tsv'). " \
-        "If 'na_value' from the yaml of option '-na' is not 'nan' " \
-        "(i.e. the numpy's NaN), then another ouput file " \
+        "Output Metadata file name (Default: '*_clean.tsv'). "
+        "If 'na_value' from the yaml of option '-na' is not 'nan' "
+        "(i.e. the numpy's NaN), then another ouput file "
         "will be generated, with '<previous_output>_<username>.tsv')"
     ),
 )
 @click.option(
-#parser.add_argument(
     "-na",
     "--nan-value",
     required=False,
@@ -60,7 +54,6 @@ from metadata_cleaning import __version__
     ),
 )
 @click.option(
-#parser.add_argument(
     "-s",
     "--sample-id",
     required=False,
@@ -153,7 +146,6 @@ from metadata_cleaning import __version__
     ),
 )
 @click.option(
-#parser.add_argument(
     "-v",
     "--verbose",
     required=False,
@@ -184,7 +176,6 @@ def run_cleaning(
     """
     Perform the cleaning of metadata on command line.
     """
-    print(sample_id)
     rules, na_value, nan_value_user, sample_id_cols = parse_yaml_file(
         r_yaml_file,
         verbose
@@ -198,13 +189,13 @@ def run_cleaning(
     if nan_value:
         nan_value_user = nan_value
 
-    metadata_pd = parse_metadata_files(
+    metadata_pd = parse_metadata_file(
         sample_id_cols,
         m_metadata_file,
         False  # do not do dummy by default
     )
 
-    clean_metadata_fps = metadata_clean(
+    metadata_clean(
         rules,
         no_booleans,
         no_combinations,
@@ -223,8 +214,6 @@ def run_cleaning(
         verbose
     )
 
-    print("\nOutput(s) of metadata_cleaning:")
-    print('\n'.join(clean_metadata_fps))
 
 if __name__ == "__main__":
     run_cleaning()

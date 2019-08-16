@@ -1,7 +1,15 @@
+#!/usr/bin/env python3
+# ----------------------------------------------------------------------------
+# Copyright (c) 2019--, Clean development team.
+#
+# Distributed under the terms of the Modified BSD License.
+#
+# The full license is in the file LICENSE.txt, distributed with this software.
+# ----------------------------------------------------------------------------
 import random
 import pandas as pd
 
-def build_dummy_dataset_for_lauriane_rules_testing():
+def build_dummy_dataset():
     dummy = pd.DataFrame({'sample_name': [0,1,2,3,4,5,6,6,6,7,8,9,10],
                           'bloom_fraction': [float(x)/100 for x in range(-50, 210, 20)],
                           'TF': [random.choice([True, False]) for x in range(13)],

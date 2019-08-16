@@ -6,39 +6,76 @@
 #
 # The full license is in the file LICENSE.txt, distributed with this software.
 # ----------------------------------------------------------------------------
-
 import os
 import pandas as pd
-import numpy as np
 import getpass
 
+from metadata_cleaning.tests._utils_test import build_dummy_dataset
 
-def get_nan_value_and_sampleID_cols(rules):
+
+def validate_fp(fp):
     """
-    Get the default "NaN" values that will be used
-    in the per_column rules.
+    Does some basic validation on the passed file.
+    """
+    if not os.path.isfile(fp):
+        raise FileNotFoundError(
+            "'%s' do not exist." % fp
+        )
+
+
+def validate_pd(metadata_fp, metadata_pd):
+    """
+    Does some basic validation on the DataFrame.
+    # inspired from https://github.com/biocore/qurro/
+       Checks not empty.
+    """
+    if metadata_pd.shape[0] < 2:
+        raise ValueError(
+            "May only have one row in the metadata file {}.".format(metadata_fp)
+        )
+    if metadata_pd.shape[1] < 2:
+        raise ValueError(
+            "May only have one column in the metadata file {}.".format(metadata_fp)
+        )
+
+
+def parse_metadata_file(sample_id_cols, metadata_fp=None, do_dummy=False):
+    """
+    Read the metadata input file.
 
     Parameters
     ----------
-    rules : dict
-        All rules in the following keys:
-            ['booleans', 'combinations', 'nans',
-            'per_column', 'sample_id', 'time_format']
+    sample_id_cols : list
+        Names of the columns containing the sample IDs
+
+    metadata_fp : str
+        File path for the metadata file
+        if either excel of tab-separated format.
+
+    do_dummy : bool
+        Tells whether to jsut run things
+        on the dummy dataset.
 
     Returns
     -------
-    nan_value : str / np.nan
-        Value to use for replacement for NaN / declared as such
+    metadata_pd : pd.DataFrame
+        Metadata data frame.
     """
-    if 'na_value' in rules:
-        nan_value = rules['na_value']
+    if do_dummy:
+        metadata_fp = None
+        metadata_pd = build_dummy_dataset()
     else:
-        nan_value = np.nan
-
-    if 'sample_id' in rules:
-        if 'sample_id_cols' in rules['sample_id']:
-            return nan_value, rules['sample_id']['sample_id_cols']
-    return nan_value, None
+        if not metadata_fp:
+            metadata_fp = os.path.join(
+                "tests", "test_datasets", "dummy.tsv"
+            )
+        validate_fp(metadata_fp)
+        if 'xls' in os.path.splitext(metadata_fp)[1]:
+            metadata_pd = read_input_metadata(metadata_fp, True, sample_id_cols)
+        else:
+            metadata_pd = read_input_metadata(metadata_fp, False, sample_id_cols)
+        validate_pd(metadata_fp, metadata_pd)
+    return metadata_pd
 
 
 def read_input_metadata(file_path, is_excel=False, as_str=None):
@@ -62,7 +99,7 @@ def read_input_metadata(file_path, is_excel=False, as_str=None):
         Metadata table in pandas dataframe format.
     """
     if as_str:
-        as_str_d = dict([x, 'str'] for x in as_str)
+        as_str_d = dict((x, 'str') for x in as_str)
     else:
         as_str_d = {'#SampleID': 'str', 'sample_name': 'str'}
 
@@ -82,7 +119,7 @@ def write_clean_metadata(metadata_pd, metadata_fp, output_fp):
 
     Parameters
     ----------
-    metadata_pd : str
+    metadata_pd : pd.DataFrame
         Clean metadata table.
 
     metadata_fp : str
@@ -110,7 +147,7 @@ def write_clean_metadata_user(metadata_pd, metadata_fp, output_fp, nan_value_use
 
     Parameters
     ----------
-    metadata_pd : str
+    metadata_pd : pd.DataFrame
         Clean metadata table.
 
     metadata_fp : str
@@ -144,7 +181,7 @@ def write_clean_metadata_user(metadata_pd, metadata_fp, output_fp, nan_value_use
 
 def write_outputs(metadata_pd, metadata_fp, output_fp, nan_value, nan_value_user):
 
-    clean_metadata_fps = []
+    clean_metadata_fps = list()
 
     clean_metadata_fps.append(
         write_clean_metadata(
@@ -153,7 +190,6 @@ def write_outputs(metadata_pd, metadata_fp, output_fp, nan_value, nan_value_user
             output_fp
         )
     )
-
     if nan_value_user != nan_value:
         clean_metadata_fps.append(
             write_clean_metadata_user(
@@ -163,4 +199,9 @@ def write_outputs(metadata_pd, metadata_fp, output_fp, nan_value, nan_value_user
                 nan_value_user
             )
         )
-    return clean_metadata_fps
+    if clean_metadata_fps:
+        print("\nOutput(s) of metadata_cleaning:")
+        print('\n'.join(clean_metadata_fps))
+        return 0
+
+    return 1
