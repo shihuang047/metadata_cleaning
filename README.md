@@ -18,6 +18,7 @@ git clone https://github.com/FranckLejzerowicz/metadata_cleaning.git
 cd metadata_cleaning
 python setup.py build_ext --inplace --force install
 ```
+*_Note that python should be python3_
 
 ## Input / Output
 
