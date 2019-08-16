@@ -4,7 +4,7 @@ metadata_clean is a metadata curation tool that applies rules form the user and 
 
 ## Description
 
-Metadata often need to be cleaned upfront in order to adress issues such as
+Metadata often need to be cleaned upfront in order to address issues such as
 * duplicated sample ids,
 * incorrect factor spellings that create additional factors,
 * inconsistencies between metadata (e.g. pregnant male, alcoholic baby, ...),
@@ -21,7 +21,8 @@ python setup.py build_ext --inplace --force install
 
 ## Input / Output
 
-*Look at the [dummy input / output metadata table examples below](##Examples), and the yaml example too (encoding the cleaning
+*Look at the [dummy input / output metadata table examples below](##-examples), and the yaml example too (encoding
+ the cleaning
  rules from the Danone team)*
 
 ## Inputs
@@ -39,7 +40,7 @@ It works well on the Danone files, e.g.:
 The way to generate this file could be done in several ways:
 
 * Use the yaml rules maker (**TO DO**: develop a helper tool based on `raw_input`)
-* Direct writing in yaml: see [example below](###yaml-rules)
+* Direct writing in yaml: see [example below](###-yaml-rules)
 * Python dictionary-based:
     * Write the rules as a dictionary, e.g.
         ```
@@ -126,7 +127,7 @@ The way to generate this file could be done in several ways:
 /Danone_md_colInfos_n3844_AC_LR_AC_FL.txt``)
 
 Most directives are given in the yaml rules file, but arguments passed to command line could override (see [below
-](###Optional-arguments)).
+](###-optional-arguments)).
 
 **Attention**: for the rules "combinations", the order imports: a column might have to be cleaned based on another
  column that has already been cleaned! 
