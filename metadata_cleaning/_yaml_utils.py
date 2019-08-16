@@ -36,5 +36,5 @@ def get_yaml_rules(yaml_rules_fp, show=False):
             print()
             print(i)
             print(j)
-    print('\n%s' % ('='*100))
+        print('\n%s' % ('='*100))
     return rules
