@@ -24,7 +24,7 @@ from metadata_cleaning import __version__
 @click.option(
 #parser.add_argument(
     "-r",
-    "-r-yaml-file",
+    "--r-yaml-file",
     required=True,
     help="Rules file in yaml format."
 )

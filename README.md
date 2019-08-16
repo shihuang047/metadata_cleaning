@@ -316,7 +316,7 @@ time_format:
 
 ### Output metadata
 
-Cleaned metadata (according) to the rules:
+Cleaned metadata (according to the rules):
 
 
 |    |   sample_name |   bloom_fraction | TF   | COLLECTION_DATE   | COLLECTION_TIME   | COLLECTION_TIMESTAMP   |   bmi |   dummiest | sex   | pregnant   |   AGE_CORR |   weight_g |   height_cm | alcohol_gin   | alcohol_chartreuse   | alcohol_consumption   |
