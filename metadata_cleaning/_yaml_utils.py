@@ -31,8 +31,10 @@ def get_yaml_rules(yaml_rules_fp, show=False):
         rules = yaml.load(f)
 
     if show:
+        print('%s cleaning rules %s' % (('='*40), ('='*40)))
         for i,j in rules.items():
             print()
             print(i)
             print(j)
+    print('\n%s' % ('='*100))
     return rules

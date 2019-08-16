@@ -25,7 +25,7 @@ def make_regex_from_nan_value(nan_value):
                 'o data', 'o data|o_data'
             ).replace(
                 'ot provided', 'ot provided|ot_provided'
-            )
+            ).copy()
         else:
             regex_nan = 'nan'
     else:
@@ -171,12 +171,12 @@ def get_certainly_NaNs(potential_unks, md_pd, freq=10):
     potential_unks_pd = pd.DataFrame(potential_unks_pd_L,
                                      index=md_pd.columns.tolist(),
                                      columns=sorted(potential_unks.keys()))
-    nrows = potential_unks_pd.shape[0]
+    # nrows = potential_unks_pd.shape[0]
     sumCols = potential_unks_pd.sum(0)
 
     # Keep only the columns (i.e. the variables) that have at least 10 entries
     # all_unks_pd_common = all_unks_pd.loc[:, sumCols > (nrows*0.1)]
-    certainly_NaNs = potential_unks_pd.loc[:, sumCols > freq]
+    certainly_NaNs = potential_unks_pd.loc[:, sumCols > freq].copy()
     return certainly_NaNs
 
 
@@ -306,7 +306,10 @@ def make_solve_dtypes_cleaning(md_pd, nan_value, sampleID_cols, show=None):
     # get metadata factors that are short (length in the previous command) and frequent (freq here)
     certainly_NaNs = get_certainly_NaNs(potential_unks, md_pd, freq=10)
     if len(certainly_NaNs) and show:
-        print('\nWarning: should not these be "%s" factors?:\n' % nan_value, ', '.join(certainly_NaNs.columns.tolist()))
+        print('\nWarning: should not these '
+              'be "%s" factors in the "nans" rule?:\n\t%s\n' % (
+            nan_value, ', '.join(certainly_NaNs.columns.tolist())
+        ))
 
     # get the final dtype by verifying the numeric column "without" the added nan_values
     dtypes_inferred, dtypes_final = get_dtypes_final(dtypes_inferred, md_pd, nan_value, sampleID_cols)

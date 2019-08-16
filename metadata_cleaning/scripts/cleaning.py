@@ -74,7 +74,7 @@ from metadata_cleaning import __version__
 )
 @click.option(
     "-boo",
-    "-no-booleans",
+    "--no-booleans",
     required=False,
     is_flag=True,
     default=False,
@@ -84,7 +84,7 @@ from metadata_cleaning import __version__
 )
 @click.option(
     "-com",
-    "-no-combinations",
+    "--no-combinations",
     required=False,
     is_flag=True,
     default=False,
@@ -94,7 +94,7 @@ from metadata_cleaning import __version__
 )
 @click.option(
     "-del",
-    "-no-del-columns",
+    "--no-del-columns",
     required=False,
     is_flag=True,
     default=False,
@@ -104,7 +104,7 @@ from metadata_cleaning import __version__
 )
 @click.option(
     "-for",
-    "-no-forbidden-characters",
+    "--no-forbidden-characters",
     required=False,
     is_flag=True,
     default=False,
@@ -114,7 +114,7 @@ from metadata_cleaning import __version__
 )
 @click.option(
     "-nan",
-    "-no-nans",
+    "--no-nans",
     required=False,
     is_flag=True,
     default=False,
@@ -124,7 +124,7 @@ from metadata_cleaning import __version__
 )
 @click.option(
     "-per",
-    "-no-per-column",
+    "--no-per-column",
     required=False,
     is_flag=True,
     default=False,
@@ -134,7 +134,7 @@ from metadata_cleaning import __version__
 )
 @click.option(
     "-sol",
-    "-no-solve-dtypes",
+    "--no-solve-dtypes",
     required=False,
     is_flag=True,
     default=False,
@@ -144,7 +144,7 @@ from metadata_cleaning import __version__
 )
 @click.option(
     "-tim",
-    "-no-time-format",
+    "--no-time-format",
     required=False,
     is_flag=True,
     default=False,
@@ -171,43 +171,59 @@ def run_cleaning(
     nan_value,
     o_metadata_file,
     sample_id,
+    no_booleans,
+    no_combinations,
+    no_del_columns,
+    no_forbidden_characters,
+    no_nans,
+    no_per_column,
+    no_solve_dtypes,
+    no_time_format,
     verbose
 ):
     """
     Perform the cleaning of metadata on command line.
     """
     print(sample_id)
-    rules, na_value, nan_value_usr, sampleID_cols = parse_yaml_file(
+    rules, na_value, nan_value_user, sample_id_cols = parse_yaml_file(
         r_yaml_file,
         verbose
     )
 
     # override sample IDs columns
     if sample_id:
-        sampleID_cols = sample_id
+        sample_id_cols = sample_id
 
     # override default NaN
     if nan_value:
         nan_value_user = nan_value
 
     metadata_pd = parse_metadata_files(
-        sampleID_cols,
+        sample_id_cols,
         m_metadata_file,
-        False # do not do dummy by default
+        False  # do not do dummy by default
     )
 
     clean_metadata_fps = metadata_clean(
         rules,
-        nan_value,
+        no_booleans,
+        no_combinations,
+        no_del_columns,
+        no_forbidden_characters,
+        no_nans,
+        no_per_column,
+        no_solve_dtypes,
+        no_time_format,
+        na_value,
         nan_value_user,
-        sampleID_cols,
+        sample_id_cols,
         metadata_pd,
         m_metadata_file,
         o_metadata_file,
         verbose
     )
 
-    print("Output(s) of metadata_cleaning:")
+    print("\nOutput(s) of metadata_cleaning:")
     print('\n'.join(clean_metadata_fps))
 
 if __name__ == "__main__":

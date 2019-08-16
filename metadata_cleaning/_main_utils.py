@@ -102,7 +102,7 @@ def make_sampleID_cleaning(md, sample_rules, show=False):
             if input_col.unique().size != input_col.size:
                 if show:
                     print('Warning: duplicate sample names in "%s"' % sample_col)
-                    print(' (Duplication number: %s)' % sum(input_col.value_counts() > 1))
+                    print(' (Duplication number: %s)\n' % sum(input_col.value_counts() > 1))
                 if sample_rules['check_sample_id_force']:
                     replicated = dict(input_col.value_counts())
                     new_ids = []
@@ -142,15 +142,15 @@ def make_date_time_cleaning(md, rules):
     # for each time colums passed in the rules file
     for name_col in rules['time_format']['columns']:
         if name_col in md:
-            input_col = md[name_col]
+            input_col = md[name_col].copy()
             # format using pandas function .to_datetime and eventually parse this formatting
             if name_col.lower() == 'collection_date':
-                input_col_dt = pd.to_datetime(input_col, infer_datetime_format=True).astype('str')
+                input_col_dt = pd.to_datetime(input_col, infer_datetime_format=True).astype('str').copy()
                 clean_time = ['/'.join(x.split('-')[::-1]) for x in input_col_dt]
             elif name_col.lower() == 'collection_time':
-                clean_time = pd.to_datetime(input_col, format='%H:%M:%S').dt.time.astype('str')
+                clean_time = pd.to_datetime(input_col, format='%H:%M:%S').dt.time.astype('str').copy()
             elif name_col.lower() == 'collection_timestamp':
-                input_col_dt = pd.to_datetime(input_col, infer_datetime_format=True).astype('str')
+                input_col_dt = pd.to_datetime(input_col, infer_datetime_format=True).astype('str').copy()
                 clean_time = ['%s %s' % ('/'.join(x.split()[0].split('-')[::-1]), x.split()[1]) for x in input_col_dt]
             md[name_col] = clean_time
     return md
@@ -178,13 +178,15 @@ def make_forbidden_characters_cleaning(md_pd, forbidden_rules):
     """
     if not isinstance(forbidden_rules, dict):
         print('Warning: object in "forbidden_characters" must be a dict')
-        print(' -> no forbidden_characters cleaning...')
+        print(' -> no forbidden_characters cleaning...\n')
         return md_pd
+    md_dp_copy = md_pd.copy()
     for col in md_pd.columns:
         if str(md_pd[col].dtype) == 'object':
-            cur_col = md_pd[col]
+            cur_col = md_dp_copy[col]
             for k,v in forbidden_rules.items():
-                md_pd[col].replace(k,v,inplace=True)
-    return md_pd
+                cur_col = cur_col.replace(k,v)
+            md_dp_copy[col] = cur_col
+    return md_dp_copy
 
 

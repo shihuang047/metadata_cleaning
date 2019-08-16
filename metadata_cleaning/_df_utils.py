@@ -97,7 +97,7 @@ def write_clean_metadata(metadata_pd, metadata_fp, output_fp):
         Path to the output metadata file.
     """
     if not output_fp:
-        output_fp = '%s_clean.tsv' % os.path.splitext(output_fp)[0]
+        output_fp = '%s_clean.tsv' % os.path.splitext(metadata_fp)[0]
     elif '.' not in output_fp or len(output_fp.split('.')[-1])>15:
         output_fp = '%s_clean.tsv' % output_fp
     metadata_pd.to_csv(output_fp, index=False, sep='\t')
@@ -132,13 +132,13 @@ def write_clean_metadata_user(metadata_pd, metadata_fp, output_fp, nan_value_use
     # (so that these columns can be read as numeric)
     if not output_fp:
         if str(getpass.getuser()):
-            output_fp = '%s_%s.tsv' % (os.path.splitext(metadata_fp)[0], str(getpass.getuser()))
+            output_fp = '%s_clean_%s.tsv' % (os.path.splitext(metadata_fp)[0], str(getpass.getuser()))
         else:
-            output_fp = '%s_user.tsv' % os.path.splitext(metadata_fp)[0]
+            output_fp = '%s_clean_user.tsv' % os.path.splitext(metadata_fp)[0]
     elif '.' not in output_fp or len(output_fp.split('.')[-1]) > 15:
         output_fp = '%s_clean_%s.tsv' % (output_fp, str(getpass.getuser()))
-    metadata_pd = metadata_pd.fillna(str(nan_value_user))
-    metadata_pd.to_csv(output_fp, index=False, sep='\t')
+    metadata_out_pd = metadata_pd.fillna(str(nan_value_user)).copy()
+    metadata_out_pd.to_csv(output_fp, index=False, sep='\t')
     return output_fp
 
 
@@ -153,13 +153,14 @@ def write_outputs(metadata_pd, metadata_fp, output_fp, nan_value, nan_value_user
             output_fp
         )
     )
+
     if nan_value_user != nan_value:
         clean_metadata_fps.append(
             write_clean_metadata_user(
                 metadata_pd,
                 metadata_fp,
-                nan_value_user,
-                output_fp
+                output_fp,
+                nan_value_user
             )
         )
     return clean_metadata_fps
