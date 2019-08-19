@@ -1,0 +1,6 @@
+sample_name	bloom_fraction	TF	to_na	sample_id	#SampleID	sample	#SampleName	sam
+0	-0.5	True	Unspecified	0	0	0	0	0
+1	-0.3	False	Unspecified	1	1	1	1	1
+2	-0.1	True	Unspecified	2	2	2	2	2
+3	0.1	True	Unspecified	3	3	3	3	3
+4	0.3	False	not provided	4	4	4	4	4

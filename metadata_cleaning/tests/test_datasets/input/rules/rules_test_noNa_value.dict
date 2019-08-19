@@ -1,0 +1,1 @@
+{'sample_id': {'sample_id_cols': ['#SampleID', 'sample_name'], 'check_sample_id_unique': True, 'check_sample_id_force': True}, 'nans': ['Not provided', 'Not_provided', 'not provided', 'not_provided', 'Unknown', 'unknown', 'Unspecified', 'unspecified', 'no data', 'no_data'], 'solve_dtypes': True}

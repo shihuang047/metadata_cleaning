@@ -1,0 +1,6 @@
+na_value: NA
+sample_id:
+  check_sample_id_force: true
+  check_sample_id_unique: true
+  sample_id_cols:
+  - sample_name

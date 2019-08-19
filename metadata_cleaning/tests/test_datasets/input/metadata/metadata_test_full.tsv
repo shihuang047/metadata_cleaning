@@ -1,0 +1,14 @@
+sample_name	bloom_fraction	TF	COLLECTION_DATE	COLLECTION_TIME	COLLECTION_TIMESTAMP	bmi	to_na	sex	pregnant	latitude	longitude	AGE_CORR	weight_g	height_cm	alcohol_gin	alcohol_chartreuse	alcohol_consumption
+0	-0.5	False	4/01/2015	00:20:00	04/01/15 00:20	10	0	male	False	HERE	THERE	0	10	110	Yes	No	Yes
+1	-0.3	True	5/8/15	22:00:00	5/8/2015 22:00	20	Unspecified	male	False	HERE	THERE	1	40	10	No	No	No
+2	-0.1	False	03/25/2015	19:00:00	03/25/2015 19:00	30	Unspecified	male	False	HERE	THERE	3	10	30	No	No	No
+3	0.1	True	03/05/2015	11:00:00	03/05/2015 11:00	40	not provided	male	True	HERE	THERE	4	10	400	No	No	No
+4	0.3	True	06/16/2015	9:45:00	06/16/2015 9:45	50	not provided	male	False	HERE	THERE	0	10	100	No	No	No
+5	0.5	False	3/9/2015	07:00:00	3/09/2015 7:00	60	Unspecified	male	True	HERE	THERE	1	10	30	Yes	No	Yes
+6	0.7	False	04/26/2015	9:30:00	04/26/2015 09:30	70	Unspecified	male	False	HERE	THERE	2	10	20	Yes	No	Yes
+6	0.9	True	05/15/15	11:05:00	05/15/2015 11:05	80	not provided	male	False	HERE	THERE	3	30	30	No	No	No
+6	1.1	True	03/09/2015	7:00:00	5/8/2015 22:00	90	not provided	male	False	HERE	THERE	20	50	50	No	Yes	No
+7	1.3	True	04/26/2015	9:30:00	3/25/15 19:00	100	Unspecified	male	True	HERE	THERE	20	60	60	Yes	No	Yes
+8	1.5	True	05/15/2015	11:05:00	03/05/15 11:00	110	0	male	True	HERE	THERE	20	100	100	No	No	No
+9	1.7	True	4/7/2015	15:30:00	04/07/15 15:30	120	Unspecified	male	False	HERE	THERE	20	100	100	Yes	No	No
+10	1.9	True	04/16/15	13:15:00	04/16/2015 13:15	130	not provided	male	True	HERE	THERE	20	100	100	Yes	No	No

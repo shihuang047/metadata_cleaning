@@ -1,0 +1,14 @@
+sample_name	bloom_fraction	TF	COLLECTION_DATE	COLLECTION_TIME	COLLECTION_TIMESTAMP	bmi	dummiest	sex	pregnant	AGE_CORR	weight_g	height_cm	alcohol_gin	alcohol_chartreuse	alcohol_consumption
+0		Yes	01/04/2015	00:20:00	01/04/2015 00:20:00			male	NaN	0.0	10.0		Yes	No	
+1		No	08/05/2015	22:00:00	08/05/2015 22:00:00	20.0		male	No	1.0			No	No	No
+2		No	25/03/2015	19:00:00	25/03/2015 19:00:00	30.0		male	No	3.0	10.0		No	No	No
+3	0.1	Yes	05/03/2015	11:00:00	05/03/2015 11:00:00	40.0		male	No	4.0	10.0		No	No	No
+4	0.3	No	16/06/2015	09:45:00	16/06/2015 09:45:00	50.0	0.0	male	NaN	0.0	10.0	100.0	No	No	No
+5	0.5	No	09/03/2015	07:00:00	09/03/2015 07:00:00			male	No	1.0	10.0		Yes	No	
+6.1	0.7	Yes	26/04/2015	09:30:00	26/04/2015 09:30:00		0.0	male	NaN	2.0	10.0		Yes	No	
+6.2	0.9	No	15/05/2015	11:05:00	15/05/2015 11:05:00			male	No	3.0			No	No	No
+6.3		No	09/03/2015	07:00:00	08/05/2015 22:00:00		0.0	male	NaN	20.0	50.0	50.0	No	Yes	Yes
+7		No	26/04/2015	09:30:00	25/03/2015 19:00:00			male	NaN	20.0	60.0	60.0	Yes	No	Yes
+8		Yes	15/05/2015	11:05:00	05/03/2015 11:00:00			male	NaN	20.0	100.0	100.0	No	No	No
+9		No	07/04/2015	15:30:00	07/04/2015 15:30:00			male	NaN	20.0	100.0	100.0	Yes	No	Yes
+10		Yes	16/04/2015	13:15:00	16/04/2015 13:15:00		0.0	male	No	20.0	100.0	100.0	Yes	No	Yes

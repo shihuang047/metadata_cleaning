@@ -1,0 +1,18 @@
+nans:
+- Not provided
+- Not_provided
+- not provided
+- not_provided
+- Unknown
+- unknown
+- Unspecified
+- unspecified
+- no data
+- no_data
+sample_id:
+  check_sample_id_force: true
+  check_sample_id_unique: true
+  sample_id_cols:
+  - '#SampleID'
+  - sample_name
+solve_dtypes: true
