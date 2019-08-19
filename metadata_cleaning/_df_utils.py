@@ -10,8 +10,6 @@ import os
 import pandas as pd
 import getpass
 
-from metadata_cleaning.tests._utils_test import build_dummy_dataset
-
 
 def validate_fp(fp):
     """
@@ -21,6 +19,7 @@ def validate_fp(fp):
         raise FileNotFoundError(
             "'%s' do not exist." % fp
         )
+    return fp
 
 
 def validate_pd(metadata_fp, metadata_pd):
@@ -37,45 +36,6 @@ def validate_pd(metadata_fp, metadata_pd):
         raise ValueError(
             "May only have one column in the metadata file {}.".format(metadata_fp)
         )
-
-
-def parse_metadata_file(sample_id_cols, metadata_fp=None, do_dummy=False):
-    """
-    Read the metadata input file.
-
-    Parameters
-    ----------
-    sample_id_cols : list
-        Names of the columns containing the sample IDs
-
-    metadata_fp : str
-        File path for the metadata file
-        if either excel of tab-separated format.
-
-    do_dummy : bool
-        Tells whether to jsut run things
-        on the dummy dataset.
-
-    Returns
-    -------
-    metadata_pd : pd.DataFrame
-        Metadata data frame.
-    """
-    if do_dummy:
-        metadata_fp = None
-        metadata_pd = build_dummy_dataset()
-    else:
-        if not metadata_fp:
-            metadata_fp = os.path.join(
-                "tests", "test_datasets", "dummy.tsv"
-            )
-        validate_fp(metadata_fp)
-        if 'xls' in os.path.splitext(metadata_fp)[1]:
-            metadata_pd = read_input_metadata(metadata_fp, True, sample_id_cols)
-        else:
-            metadata_pd = read_input_metadata(metadata_fp, False, sample_id_cols)
-        validate_pd(metadata_fp, metadata_pd)
-    return metadata_pd
 
 
 def read_input_metadata(file_path, is_excel=False, as_str=None):
@@ -104,13 +64,39 @@ def read_input_metadata(file_path, is_excel=False, as_str=None):
         as_str_d = {'#SampleID': 'str', 'sample_name': 'str'}
 
     if is_excel:
-        # metadata for the sgotgun selection
         md_pd = pd.read_excel(file_path, header=0,
                               sep='\t', dtype=as_str_d)
     else:
         md_pd = pd.read_csv(file_path, header=0,
                             sep='\t', dtype=as_str_d)
     return md_pd
+
+
+def parse_metadata_file(metadata_fp, sample_id_cols):
+    """
+    Read the metadata input file.
+
+    Parameters
+    ----------
+    sample_id_cols : list
+        Names of the columns containing the sample IDs
+
+    metadata_fp : str
+        File path for the metadata file
+        if either excel of tab-separated format.
+
+    Returns
+    -------
+    metadata_pd : pd.DataFrame
+        Metadata data frame.
+    """
+    metadata_fp = validate_fp(metadata_fp)
+    if 'xls' in os.path.splitext(metadata_fp)[1]:
+        metadata_pd = read_input_metadata(metadata_fp, True, sample_id_cols)
+    else:
+        metadata_pd = read_input_metadata(metadata_fp, False, sample_id_cols)
+    validate_pd(metadata_fp, metadata_pd)
+    return metadata_pd
 
 
 def write_clean_metadata(metadata_pd, metadata_fp, output_fp):

@@ -60,7 +60,9 @@ setup(
     install_requires=[
         "click",
         "pyyaml",
+        "jsonschema",
         "numpy",
+        "pytest",
         "pandas"
     ],
     ## Based on how Altair splits up its requirements:

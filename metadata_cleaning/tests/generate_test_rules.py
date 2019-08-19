@@ -9,6 +9,7 @@
 from os.path import join
 import yaml
 import json
+import codecs
 
 
 def generate_test_yaml(
@@ -43,35 +44,38 @@ def generate_test_yaml(
     # Make the data frame for the test case
     if basename == 'full':
         # complete dummy rules
-        data_yaml = data
+        data_yaml = dict(data)
 
     elif basename == 'empty':
         # empty file
         data_yaml = ''
 
     elif basename in ['']:
-        data_yaml = dict(
-            (x, rules_sub[x]) for x, y in data.items()
-        )
+        data_yaml = dict((x, rules_sub[x]) for x, y in data.items())
+
+    elif basename in ['oneSamNA']:
+        data_yaml = dict((x, rules_sub[x]) for x, y in data.items() if x in rules_in)
+
+    elif basename in ['noNa_value']:
+        data_yaml = dict((x, y) for x, y in data.items() if x in rules_in)
 
     elif basename in ['noSampleId']:
-        data_yaml = dict(
-            (x, y) for x, y in data.items() if x in rules_in
-        )
+        data_yaml = dict((x, y) for x, y in data.items() if x in rules_in)
 
     # Write the table in the file having the basename
     path_yaml = join("test_datasets", "input", "rules", "rules_test_%s.yaml" % basename)
     path_dict = path_yaml.replace('.yaml', '.dict')
-    print(path_yaml)
-    print(path_dict)
     if data_yaml:
-        json.dump(data_yaml, open(path_dict, 'w'))
+        file = codecs.open(path_dict, "w", "utf-8")
+        file.write(str(data_yaml))
+        file.close()
         with open(path_yaml, "w") as o:
-            # for i in yaml.dump(data_yaml):
             o.write(yaml.dump(data_yaml))
     else:
         open(path_yaml, 'w').close()
         open(path_dict, 'w').close()
+    print(path_yaml)
+    print(path_dict)
 
 
 if __name__ == "__main__":
@@ -175,24 +179,24 @@ if __name__ == "__main__":
     }
 
     rules_in = [
-        'booleans',
-        'combinations',
-        'del_columns',
-        'forbidden_characters',
-        'na_value',
+#        'booleans',
+ #       'combinations',
+  #      'del_columns',
+   #     'forbidden_characters',
+    #    'na_value',
         'nans',
-        'per_column',
-        # 'sample_id',
+     #   'per_column',
+        'sample_id',
         'solve_dtypes',
-        'time_format',
+       # 'time_format',
     ]
 
-    rules_sub = {'sample_id': {'sample_id_cols': ['#SampleID', 'sample_name'],
+    rules_sub = {'sample_id': {'sample_id_cols': ['sample_name'],
                                'check_sample_id_unique': True,
                                'check_sample_id_force': True},
                  'nans': ['Not provided', 'Not_provided', 'not provided', 'not_provided',
                           'Unknown', 'unknown', 'Unspecified', 'unspecified', 'no data', 'no_data'],
-                 'na_value': 'Missing',
+                 'na_value': 'NA',
                  'solve_dtypes': True,
                  'del_columns': ['latitude', 'longitude'],
                  'forbidden_characters': {'(': '_', '%': '_', ',': '_', '/': '_', ')': '_', ' ': '_'},
@@ -220,9 +224,11 @@ if __name__ == "__main__":
                                   ('sex', 'pregnant'): [('male', True), {'pregnant': 'NaN'}]}
                  }
 
-    # basename = 'noSampleId'
+    basename = 'empty'
+    basename = 'noSampleId'
     basename = 'full'
-    # basename = 'empty'
+    basename = 'oneSamNA'
+    basename = 'noNa_value'
 
     generate_test_yaml(
         data,

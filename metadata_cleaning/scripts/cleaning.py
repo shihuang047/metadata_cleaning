@@ -29,7 +29,7 @@ from metadata_cleaning import __version__
     "-m",
     "--m-metadata-file",
     required=True,
-    help="Metadata file"
+    help="Metadata file in tab"
 )
 @click.option(
     "-o",
@@ -176,6 +176,7 @@ def run_cleaning(
     """
     Perform the cleaning of metadata on command line.
     """
+
     rules, na_value, nan_value_user, sample_id_cols = parse_yaml_file(
         r_yaml_file,
         verbose
@@ -190,9 +191,8 @@ def run_cleaning(
         nan_value_user = nan_value
 
     metadata_pd = parse_metadata_file(
-        sample_id_cols,
         m_metadata_file,
-        False  # do not do dummy by default
+        sample_id_cols
     )
 
     metadata_clean(

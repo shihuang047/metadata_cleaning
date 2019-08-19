@@ -9,6 +9,7 @@
 import os
 import yaml
 import numpy as np
+from yaml.scanner import ScannerError
 
 
 def validate_fp(yaml_rules_fp):
@@ -19,15 +20,20 @@ def validate_fp(yaml_rules_fp):
         raise FileNotFoundError(
             "Yaml rules file '%s' do not exist." % yaml_rules_fp
         )
+    return yaml_rules_fp
 
 
-def validate_rules(yaml_rules_fp, rules):
+def validate_rules(yaml_rules_fp, rules, show=False):
     """
     Does some basic validation on the yaml rules.
     """
     if not isinstance(rules, dict):
         raise ValueError(
             "Rules from %s are not properly read" % yaml_rules_fp
+        )
+    if not rules:
+        raise ValueError(
+            "Empty rules..."
         )
     if 'sample_id' not in rules:
         raise ValueError(
@@ -53,8 +59,15 @@ def validate_rules(yaml_rules_fp, rules):
     if len(intersect_rules):
         print(
             "Warning: unrecognized rules (will not be treated):\n"
-            "- %s" % '\n-'.join(list(intersect_rules))
+            "- %s" % '\n- '.join(list(intersect_rules))
         )
+    if show:
+        print('%s cleaning rules %s' % (('='*40), ('='*40)))
+        for i,j in rules.items():
+            print()
+            print(i)
+            print(j)
+        print('\n%s' % ('='*100))
 
 
 def get_nan_value_and_sample_id_cols(rules):
@@ -78,14 +91,11 @@ def get_nan_value_and_sample_id_cols(rules):
         nan_value = rules['na_value']
     else:
         nan_value = np.nan
-
-    if 'sample_id' in rules:
-        if 'sample_id_cols' in rules['sample_id']:
-            return nan_value, rules['sample_id']['sample_id_cols']
-    return nan_value, None
+    return nan_value
 
 
-def get_yaml_rules(yaml_rules_fp, show=False):
+
+def get_yaml_rules(yaml_rules_fp):
     """
     Read rules from the yaml file.
 
@@ -103,21 +113,11 @@ def get_yaml_rules(yaml_rules_fp, show=False):
         Rules in dictionary form.
     """
     validate_fp(yaml_rules_fp)
-    with open(yaml_rules_fp) as f:
-        try:
-            rules = yaml.load(f)
-        except:
-            raise (
-                "Yaml rules file %s may not be in .yml format." % yaml_rules_fp
-            )
-    validate_rules(yaml_rules_fp, rules)
-    if show:
-        print('%s cleaning rules %s' % (('='*40), ('='*40)))
-        for i,j in rules.items():
-            print()
-            print(i)
-            print(j)
-        print('\n%s' % ('='*100))
+    try:
+        with open(yaml_rules_fp, 'rt', encoding='utf8') as yml:
+            rules = yaml.load(yml, Loader = yaml.CLoader)
+    except ScannerError:
+        raise ScannerError("Yaml rules file may not be in .yml format")
     return rules
 
 
@@ -152,12 +152,14 @@ def parse_yaml_file(yaml_rules_fp=None, show=False):
     """
     if not yaml_rules_fp:
         yaml_rules_fp = os.path.join(
-            "tests", "test_datasets", "cleaning_rules.yaml"
+            "tests", "test_datasets", "input", "rules", "cleaning_rules.yaml"
         )
-    # Read the rules from the yaml fule
-    rules = get_yaml_rules(yaml_rules_fp, show)
+    # Read the rules from the yaml file
+    rules = get_yaml_rules(yaml_rules_fp)
+    validate_rules(yaml_rules_fp, rules, False)
     # but the final user version will be written too at the end if different from np.nan
-    nan_value_user, sample_id_cols = get_nan_value_and_sample_id_cols(rules)
+    nan_value_user = get_nan_value_and_sample_id_cols(rules)
     # default NaN value will be used in the per_column rules
     nan_value = 'nan'
+    sample_id_cols = rules['sample_id']['sample_id_cols']
     return rules, nan_value, nan_value_user, sample_id_cols
